@@ -8,6 +8,15 @@ checkpoints/
 datasets/
 
 results/*.png
+!results/5b3aae8d-234d-4954-9e4c-91688e5b0f6d.png
+!results/91598b88-fb0b-4fad-93d8-b7dd5ecde646.png
+!results/756afa72-7d1e-4490-867c-2bc6034ef311.png
+!results/5d897fef-a628-4a86-a7c5-630ae5559014.png
+!results/035f0868-2e6a-4342-acad-ae0177369eea.png
+!results/4a09f266-8237-481c-b4ab-80f2f25bc3bd.png
+!results/6268fd97-b6a1-4d25-8621-0ed0b064563e.png
+!results/de5ad801-1a1d-4308-9073-05ff3b7f334f.png
+!results/9382eda1-0a79-4bac-98af-59e3e8a9182a.png
 results/*.csv
 
 .DS_Store

@@ -39,7 +39,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 from models.rgb_branch     import RGBBaselineModel
 from models.pose_branch    import PoseBranchModel
-from models.fusion         import LateFusionModel, FeatureConcatFusionModel
+from models.fusion         import LateFusionModel, FeatureConcatFusionModel, CrossAttentionFusionModel
 from models.adaptive_model import AdaptiveMultiModalModel
 
 from scripts.train        import VideoDataset
@@ -309,6 +309,32 @@ if __name__ == "__main__":
     })
     print(f"  Test Acc={test_m['Accuracy']:.2%}  F1={test_m['F1 Score']:.4f}")
 
+    # ==========================================================================
+    # F — Cross-Attention Fusion
+    # ==========================================================================
+    print("[F] Cross-Attention Fusion ...")
+    m = CrossAttentionFusionModel(num_classes=NUM_CLASSES, num_frames=NUM_FRAMES).to(device)
+    m.load_state_dict(torch.load(CKPT_DIR / "best_cross_attention_fusion.pth",
+                                 map_location=device))
+
+    val_true,  val_pred  = predict_raw_fusion(m, VAL_CSV,  device)
+    test_true, test_pred = predict_raw_fusion(m, TEST_CSV, device)
+    val_m  = compute_metrics(val_true,  val_pred,  NUM_CLASSES)
+    test_m = compute_metrics(test_true, test_pred, NUM_CLASSES)
+    train_acc = load_train_acc("results/training_log_best_cross_attention_fusion.csv")
+
+    rows.append({
+        "Model":          "Cross-Attention Fusion",
+        "Train Accuracy": round(train_acc, 4),
+        "Val Accuracy":   round(val_m["Accuracy"], 4),
+        "Test Accuracy":  round(test_m["Accuracy"], 4),
+        "Precision":      round(test_m["Precision"], 4),
+        "Recall":         round(test_m["Recall"], 4),
+        "F1 Score":       round(test_m["F1 Score"], 4),
+        "Parameters":     count_params(m),
+    })
+    print(f"  Test Acc={test_m['Accuracy']:.2%}  F1={test_m['F1 Score']:.4f}")
+
     # ── Print comparison table ─────────────────────────────────────────────────
     print(f"\n{'='*90}")
     print(f"  {'Model':<24} {'Train':>7} {'Val':>7} {'Test':>7} "
@@ -334,7 +360,7 @@ if __name__ == "__main__":
     # ── Bar chart (Test Accuracy) ──────────────────────────────────────────────
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     sns.set_style("whitegrid")
-    palette = ["steelblue", "darkorange", "seagreen", "crimson", "purple"]
+    palette = ["steelblue", "darkorange", "seagreen", "crimson", "purple", "teal"]
     models  = [r["Model"] for r in rows]
 
     # Left: Test Accuracy

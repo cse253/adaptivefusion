@@ -28,14 +28,14 @@ from tqdm import tqdm
 
 from models.rgb_branch import RGBBaselineModel
 from models.pose_branch import PoseBranchModel
-from models.fusion import LateFusionModel, FeatureConcatFusionModel
+from models.fusion import LateFusionModel, FeatureConcatFusionModel, CrossAttentionFusionModel
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-with open(Path(ROOT) / "configs" / "baseline.yaml") as f:
+with open(Path(ROOT) / "configs" / "fusion.yaml") as f:
     cfg = yaml.safe_load(f)
 
-RGB_EMB_DIR  = Path(ROOT) / "datasets" / "rgb_embeddings"
-POSE_DIR     = Path(ROOT) / "datasets" / "pose_data"
+RGB_EMB_DIR  = Path(ROOT) / cfg["data"]["rgb_emb_dir"]
+POSE_DIR     = Path(ROOT) / cfg["data"]["pose_dir"]
 NUM_FRAMES   = cfg["data"]["num_frames"]
 
 
@@ -158,11 +158,14 @@ def train_model(model, model_name: str, ckpt_name: str,
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
     # Check if checkpoints already exist to save time on CPU
     late_ckpt = Path(ROOT) / cfg["paths"]["checkpoint_dir"] / "best_late_fusion.pth"
     concat_ckpt = Path(ROOT) / cfg["paths"]["checkpoint_dir"] / "best_concat_fusion.pth"
-    if late_ckpt.exists() and concat_ckpt.exists() and "--force" not in sys.argv:
-        print(f"[INFO] Pre-trained models found at {late_ckpt.relative_to(ROOT)} and {concat_ckpt.relative_to(ROOT)}. Skipping training (use --force to retrain).")
+    cross_ckpt = Path(ROOT) / cfg["paths"]["checkpoint_dir"] / "best_cross_attention_fusion.pth"
+    
+    if late_ckpt.exists() and concat_ckpt.exists() and cross_ckpt.exists() and "--force" not in sys.argv:
+        print(f"[INFO] Pre-trained models found. Skipping training (use --force to retrain).")
         sys.exit(0)
 
     Path(ROOT, cfg["paths"]["checkpoint_dir"]).mkdir(parents=True, exist_ok=True)
@@ -182,11 +185,11 @@ def train_model(model, model_name: str, ckpt_name: str,
 
     # ── 1. Late Fusion ─────────────────────────────────────────────────────────
     # Load pretrained RGB and Pose weights
-    rgb_model  = RGBBaselineModel(num_classes=8, num_frames=NUM_FRAMES)
-    pose_model = PoseBranchModel(input_dim=258, num_classes=8, num_frames=NUM_FRAMES)
+    rgb_model  = RGBBaselineModel(num_classes=cfg["data"]["num_classes"], num_frames=NUM_FRAMES)
+    pose_model = PoseBranchModel(input_dim=258, num_classes=cfg["data"]["num_classes"], num_frames=NUM_FRAMES)
 
-    rgb_ckpt  = Path(ROOT) / cfg["paths"]["best_model"]
-    pose_ckpt = Path(ROOT) / cfg["paths"]["checkpoint_dir"] / "best_pose_model.pth"
+    rgb_ckpt  = Path(ROOT) / "checkpoints" / "best_model.pth"
+    pose_ckpt = Path(ROOT) / "checkpoints" / "best_pose_model.pth"
 
     if rgb_ckpt.exists():
         rgb_model.load_state_dict(torch.load(rgb_ckpt, map_location=device))
@@ -200,6 +203,25 @@ def train_model(model, model_name: str, ckpt_name: str,
                 train_loader, val_loader, device)
 
     # ── 2. Feature Concat Fusion ───────────────────────────────────────────────
-    concat_model = FeatureConcatFusionModel(num_classes=8, num_frames=NUM_FRAMES).to(device)
+    concat_model = FeatureConcatFusionModel(
+        num_classes=cfg["data"]["num_classes"],
+        num_frames=NUM_FRAMES,
+        rgb_d_model=cfg["model"]["rgb_d_model"],
+        pose_d_model=cfg["model"]["pose_d_model"],
+        dropout=cfg["model"]["dropout"]
+    ).to(device)
     train_model(concat_model, "FeatureConcatFusionModel", "best_concat_fusion.pth",
+                train_loader, val_loader, device)
+
+    # ── 3. Cross-Attention Fusion ──────────────────────────────────────────────
+    cross_model = CrossAttentionFusionModel(
+        num_classes=cfg["data"]["num_classes"],
+        num_frames=NUM_FRAMES,
+        rgb_d_model=cfg["model"]["rgb_d_model"],
+        pose_d_model=cfg["model"]["pose_d_model"],
+        cross_attn_d_model=cfg["model"]["cross_attn_d_model"],
+        cross_attn_nhead=cfg["model"]["cross_attn_nhead"],
+        dropout=cfg["model"]["dropout"]
+    ).to(device)
+    train_model(cross_model, "CrossAttentionFusionModel", "best_cross_attention_fusion.pth",
                 train_loader, val_loader, device)

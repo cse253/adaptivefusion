@@ -29,7 +29,7 @@ from models.adaptive_model import AdaptiveMultiModalModel
 from scripts.train_fusion import FusionDataset
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-with open(Path(ROOT) / "configs" / "baseline.yaml") as f:
+with open(Path(ROOT) / "configs" / "adaptive.yaml") as f:
     cfg = yaml.safe_load(f)
 
 NUM_FRAMES  = cfg["data"]["num_frames"]
@@ -116,7 +116,18 @@ if __name__ == "__main__":
     print(f"[INFO] Train: {len(train_loader.dataset)}  |  Val: {len(val_loader.dataset)}\n")
 
     # Model
-    model     = AdaptiveMultiModalModel(num_classes=NUM_CLASSES, num_frames=NUM_FRAMES).to(device)
+    model     = AdaptiveMultiModalModel(
+        num_classes=NUM_CLASSES,
+        num_frames=NUM_FRAMES,
+        rgb_input_dim=cfg["model"]["rgb_input_dim"],
+        rgb_d_model=cfg["model"]["rgb_d_model"],
+        pose_input_dim=cfg["model"]["pose_input_dim"],
+        pose_d_model=cfg["model"]["pose_d_model"],
+        nhead_rgb=cfg["model"]["nhead_rgb"],
+        nhead_pose=cfg["model"]["nhead_pose"],
+        num_transformer_layers=cfg["model"]["num_transformer_layers"],
+        dropout=cfg["model"]["dropout"],
+    ).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=LR, weight_decay=WD)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
@@ -139,7 +150,7 @@ if __name__ == "__main__":
             f"Epoch {epoch:02d}/{EPOCHS}  "
             f"Train Loss: {tr_loss:.4f}  Train Acc: {tr_acc:.4f}  "
             f"Val Loss: {vl_loss:.4f}  Val Acc: {vl_acc:.4f}  "
-            f"α(RGB): {vl_alpha:.4f}  β(Pose): {vl_beta:.4f}"
+            f"alpha(RGB): {vl_alpha:.4f}  beta(Pose): {vl_beta:.4f}"
         )
 
         log_rows.append({

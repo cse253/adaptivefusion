@@ -1,0 +1,37 @@
+project:
+  name: "Adaptive Multi-Modal Fusion Transformer - Multi-Modal Fusion"
+  experiment_name: "multimodal_fusion"
+
+data:
+  train_csv: "splits/train.csv"
+  val_csv: "splits/val.csv"
+  test_csv: "splits/test.csv"
+  rgb_emb_dir: "datasets/rgb_embeddings"
+  pose_dir: "datasets/pose_data"
+  num_classes: 8
+  num_frames: 16
+
+model:
+  rgb_d_model: 512
+  pose_d_model: 256
+  cross_attn_d_model: 512
+  cross_attn_nhead: 8
+  cross_attn_layers: 4
+  dropout: 0.1
+
+training:
+  batch_size: 4
+  epochs: 10
+  lr: 0.0001
+  weight_decay: 0.0001
+  optimizer: "adamw"
+
+paths:
+  checkpoint_dir: "checkpoints"
+  best_late_model: "checkpoints/best_late_fusion.pth"
+  best_concat_model: "checkpoints/best_concat_fusion.pth"
+  best_cross_attn_model: "checkpoints/best_cross_attention_fusion.pth"
+  results_dir: "results"
+  late_log: "results/training_log_best_late_fusion.csv"
+  concat_log: "results/training_log_best_concat_fusion.csv"
+  cross_attn_log: "results/training_log_best_cross_attention_fusion.csv"

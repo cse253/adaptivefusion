@@ -28,7 +28,7 @@ from torch.utils.data import DataLoader
 
 from models.rgb_branch  import RGBBaselineModel
 from models.pose_branch import PoseBranchModel
-from models.fusion      import LateFusionModel, FeatureConcatFusionModel
+from models.fusion      import LateFusionModel, FeatureConcatFusionModel, CrossAttentionFusionModel
 
 # Reuse datasets from existing scripts
 from scripts.train      import VideoDataset
@@ -140,6 +140,14 @@ if __name__ == "__main__":
     results["Feature Concat Fusion"] = eval_fusion(concat_model, fusion_loader2, device)
     print(f"  Concat Fusion    : {results['Feature Concat Fusion']:.4f}")
 
+    # ── 5. Cross-Attention Fusion ──────────────────────────────────────────────
+    print("[INFO] Evaluating Cross-Attention Fusion ...")
+    cross_model = CrossAttentionFusionModel(num_classes=NUM_CLASSES, num_frames=NUM_FRAMES).to(device)
+    cross_model.load_state_dict(torch.load(CKPT_DIR / "best_cross_attention_fusion.pth", map_location=device))
+    fusion_loader3 = DataLoader(FusionDataset(TEST_CSV), batch_size=BATCH_SIZE, num_workers=0)
+    results["Cross-Attention Fusion"] = eval_fusion(cross_model, fusion_loader3, device)
+    print(f"  Cross-Attention  : {results['Cross-Attention Fusion']:.4f}")
+
     # ── Print comparison table ─────────────────────────────────────────────────
     print(f"\n{'='*45}")
     print(f"  {'Model':<25} {'Test Acc':>10}")
@@ -152,8 +160,8 @@ if __name__ == "__main__":
     print(f"\n  Best model: {best_model} ({results[best_model]*100:.2f}%)\n")
 
     # ── Bar chart ──────────────────────────────────────────────────────────────
-    fig, ax = plt.subplots(figsize=(9, 5))
-    colors = ["steelblue", "darkorange", "seagreen", "crimson"]
+    fig, ax = plt.subplots(figsize=(10, 5))
+    colors = ["steelblue", "darkorange", "seagreen", "crimson", "purple"]
     bars   = ax.bar(results.keys(), [v * 100 for v in results.values()],
                     color=colors, edgecolor="white", width=0.5)
     ax.bar_label(bars, fmt="%.2f%%", padding=4, fontsize=10)
@@ -166,4 +174,4 @@ if __name__ == "__main__":
     out_path = RESULTS_DIR / "model_comparison.png"
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
-    print(f"[INFO] Comparison chart saved → {out_path}")
+    print(f"[INFO] Comparison chart saved -> {out_path}")

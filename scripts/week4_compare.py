@@ -48,7 +48,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from models.rgb_branch    import RGBBaselineModel
 from models.pose_branch   import PoseBranchModel
-from models.fusion        import LateFusionModel, FeatureConcatFusionModel
+from models.fusion        import LateFusionModel, FeatureConcatFusionModel, CrossAttentionFusionModel
 from models.adaptive_model import AdaptiveMultiModalModel
 
 from scripts.train        import VideoDataset
@@ -283,6 +283,20 @@ if __name__ == "__main__":
     print(f"  Train {rows[-1]['Train Accuracy']:.2%}  Val {rows[-1]['Validation Accuracy']:.2%}"
           f"  Test {rows[-1]['Test Accuracy']:.2%}")
 
+    # -- F: Cross-Attention Fusion ----------------------------------------------
+    print("[F] Cross-Attention Fusion (raw video frames) ...")
+    m = CrossAttentionFusionModel(num_classes=NUM_CLASSES, num_frames=NUM_FRAMES).to(device)
+    m.load_state_dict(torch.load(CKPT_DIR / "best_cross_attention_fusion.pth", map_location=device))
+    rows.append({
+        "Model":               "Cross-Attention Fusion",
+        "Train Accuracy":      eval_fusion(m, TRAIN_CSV, device),
+        "Validation Accuracy": eval_fusion(m, VAL_CSV,   device),
+        "Test Accuracy":       eval_fusion(m, TEST_CSV,  device),
+        "Parameters":          count_params(m),
+    })
+    print(f"  Train {rows[-1]['Train Accuracy']:.2%}  Val {rows[-1]['Validation Accuracy']:.2%}"
+          f"  Test {rows[-1]['Test Accuracy']:.2%}")
+
     # -- Print comparison table -------------------------------------------------
     print(f"\n{'='*70}")
     print(f"  {'Model':<25} {'Train':>8} {'Val':>8} {'Test':>8} {'Params':>12}")
@@ -324,10 +338,10 @@ if __name__ == "__main__":
     print(f"[INFO] CSV saved  -> {csv_path}")
 
     # -- Bar chart --------------------------------------------------------------
-    fig, ax = plt.subplots(figsize=(11, 5))
+    fig, ax = plt.subplots(figsize=(12, 5))
     names     = [r["Model"] for r in rows]
     test_accs = [r["Test Accuracy"] * 100 for r in rows]
-    colors    = ["steelblue", "darkorange", "seagreen", "crimson", "purple"]
+    colors    = ["steelblue", "darkorange", "seagreen", "crimson", "purple", "teal"]
     bars      = ax.bar(names, test_accs, color=colors, edgecolor="white", width=0.5)
     ax.bar_label(bars, fmt="%.2f%%", padding=4, fontsize=10)
     ax.set_ylabel("Test Accuracy (%)")

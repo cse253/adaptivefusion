@@ -1,8 +1,10 @@
 # Adaptive Multi-Modal Fusion Transformer for Indian Sign Language Recognition
 
-**Author:** Tharunika S S  
-**Institution:** Department of Computer Science and Engineering, Sri Eshwar College of Engineering, Coimbatore, Tamil Nadu, India  
-**Email:** tharunika.ss@sece.ac.in  
+**Authors:** Tharunika S S$^1$, L Rishi Raj$^2$  
+**Institutions:**  
+$^1$Department of Computer Science and Engineering, Sri Eshwar College of Engineering, Coimbatore, Tamil Nadu, India  
+$^2$Department of Computer Science and Engineering, National Institute of Technology, Calicut, Kozhikode, India  
+**Emails:** tharunika.ss@sece.ac.in, rishi_m240435cs@nitc.ac.in  
 
 ---
 

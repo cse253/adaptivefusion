@@ -45,6 +45,9 @@ FILES_TO_VERIFY = [
     "models/adaptive_model.py",
     # Configs & metadata
     "configs/baseline.yaml",
+    "configs/pose.yaml",
+    "configs/fusion.yaml",
+    "configs/adaptive.yaml",
     "requirements.txt",
 ]
 
@@ -56,6 +59,7 @@ EXPECTED_OUTPUTS = [
     "results/confusion_matrix.png",
     "results/classification_report.txt",
     "results/adaptive_training_log.csv",
+    "results/training_log_best_cross_attention_fusion.csv",
     "results/fusion_weights.png",
     "results/week4_comparison.csv",
     "results/week4_comparison.png",

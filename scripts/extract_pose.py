@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
                 np.save(str(out_path), sequence)
                 total_videos += 1
-                print(f"  [DONE] {video_path.name} → {out_path.name}  shape={sequence.shape}")
+                print(f"  [DONE] {video_path.name} -> {out_path.name}  shape={sequence.shape}")
 
     print(f"\n{'='*55}")
     print(f"  Extraction complete")

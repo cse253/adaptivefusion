@@ -25,10 +25,10 @@ from tqdm import tqdm
 from models.pose_branch import PoseBranchModel
 
 # ── Load config ────────────────────────────────────────────────────────────────
-with open(Path(ROOT) / "configs" / "baseline.yaml") as f:
+with open(Path(ROOT) / "configs" / "pose.yaml") as f:
     cfg = yaml.safe_load(f)
 
-POSE_DIR = Path(ROOT) / "datasets" / "pose_data"
+POSE_DIR = Path(ROOT) / cfg["data"]["pose_dir"]
 
 # ── PoseDataset ────────────────────────────────────────────────────────────────
 class PoseDataset(Dataset):
@@ -53,7 +53,7 @@ class PoseDataset(Dataset):
 
     def __getitem__(self, idx):
         row      = self.df.iloc[idx]
-        npy_path = Path(ROOT) / "datasets" / "pose_data" / row["label"] / (Path(row["video_path"]).stem + ".npy")
+        npy_path = POSE_DIR / row["label"] / (Path(row["video_path"]).stem + ".npy")
 
         if npy_path.exists():
             pose = np.load(str(npy_path)).astype(np.float32)  # (16, 258)
@@ -93,7 +93,7 @@ def run_epoch(model, loader, criterion, optimizer, device, training: bool):
 # ── Main ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     # Check if checkpoint already exists to save time on CPU
-    ckpt_path = Path(ROOT) / cfg["paths"]["checkpoint_dir"] / "best_pose_model.pth"
+    ckpt_path = Path(ROOT) / cfg["paths"]["best_model"]
     if ckpt_path.exists() and "--force" not in sys.argv:
         print(f"[INFO] Pre-trained model found at {ckpt_path.relative_to(ROOT)}. Skipping training (use --force to retrain).")
         sys.exit(0)
@@ -115,9 +115,13 @@ if __name__ == "__main__":
     print(f"[INFO] Train samples: {len(train_dataset)}  |  Val samples: {len(val_dataset)}")
 
     model = PoseBranchModel(
-        input_dim=258,
+        input_dim=cfg["model"]["input_dim"],
         num_classes=cfg["data"]["num_classes"],
         num_frames=cfg["data"]["num_frames"],
+        d_model=cfg["model"]["d_model"],
+        nhead=cfg["model"]["nhead"],
+        num_transformer_layers=cfg["model"]["transformer_layers"],
+        dropout=cfg["model"]["dropout"],
     ).to(device)
 
     criterion = nn.CrossEntropyLoss()
@@ -148,10 +152,10 @@ if __name__ == "__main__":
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            torch.save(model.state_dict(), ckpt_dir / "best_pose_model.pth")
+            torch.save(model.state_dict(), Path(ROOT) / cfg["paths"]["best_model"])
             print(f"  [OK] Best pose model saved (val_acc={best_val_acc:.4f})")
 
-    log_path = results_dir / "training_log_pose.csv"
+    log_path = Path(ROOT) / cfg["paths"]["training_log"]
     with open(log_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=log_rows[0].keys())
         writer.writeheader()
