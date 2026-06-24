@@ -1,4 +1,4 @@
-# Project Explanation Guide: Adaptive Sign Language Recognition
+0# Project Explanation Guide: Adaptive Sign Language Recognition
 
 This guide is designed for beginners to understand, run, and confidently explain this project to advisors, professors, or examiners.
 

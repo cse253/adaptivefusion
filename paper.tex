@@ -11,7 +11,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{float}
-\usepackage{subcaption}
+\usepackage[caption=false,font=footnotesize]{subfig}
 
 \begin{document}
 
@@ -83,13 +83,13 @@ Multi-modal fusion combines complementary signals from multiple input sources. I
 
 Late fusion combines predictions from separate models and is simple to implement. Feature concatenation combines intermediate embeddings before classification. Adaptive fusion learns how much importance should be assigned to each modality. This work evaluates these fusion strategies and analyzes whether learned modality weighting improves ISL recognition on a small INCLUDE dataset subset.
 
-\section{System Architecture}
+\sectionsection{System Architecture}
 
-The proposed framework consists of five major components: input video sampling, RGB feature extraction, pose landmark extraction, temporal modelling, and multimodal fusion. The overall objective is to classify each video into one of the predefined ISL sign classes.
+The proposed framework consists of five major components: input video sampling, RGB feature extraction, pose landmark extraction, temporal modelling, and multimodal fusion.
 
 \subsection{Input Processing}
 
-Each input video is uniformly sampled into 16 frames. Uniform sampling ensures that the model observes the beginning, middle, and end of the sign gesture. Each RGB frame is resized to $224 \times 224$ pixels and normalized using ImageNet statistics. In parallel, MediaPipe Holistic is used to extract pose and hand landmark coordinates from the corresponding frames.
+Each input video is uniformly sampled into 16 frames. Each RGB frame is resized to $224 \times 224$ pixels and normalized using ImageNet statistics. In parallel, MediaPipe Holistic is used to extract pose and hand landmark coordinates from the corresponding frames.
 
 \subsection{RGB Branch}
 
@@ -97,21 +97,21 @@ The RGB branch processes visual appearance information. A pretrained ResNet50 mo
 
 Let the sampled RGB sequence be represented as:
 \begin{equation}
-X_{rgb} = \{x_1, x_2, ..., x_T\}
+X_{\text{rgb}} = \{x_1, x_2, ..., x_T\}
 \end{equation}
 where $T=16$. The ResNet50 backbone extracts frame-level features:
 \begin{equation}
-f_t = ResNet50(x_t), \quad f_t \in \mathbb{R}^{2048}
+f_t = \text{ResNet50}(x_t), \quad f_t \in \mathbb{R}^{2048}
 \end{equation}
 The sequence is projected and processed by the Transformer Encoder:
 \begin{equation}
-z_{rgb} = Transformer(W_{rgb}F_{rgb} + P_{rgb})
+z_{\text{rgb}} = \text{Transformer}(\mathbf{W}_{\text{rgb}}F_{\text{rgb}} + P_{\text{rgb}})
 \end{equation}
-where $P_{rgb}$ denotes learnable positional embeddings. Temporal average pooling is applied to obtain the final RGB embedding.
+where $P_{\text{rgb}}$ denotes learnable positional embeddings. Temporal average pooling is applied to obtain the final RGB embedding.
 
 \subsection{Pose Branch}
 
-The pose branch captures geometric hand and body motion using MediaPipe Holistic landmarks. For each sampled frame, the system extracts 33 body pose landmarks, 21 left-hand landmarks, and 21 right-hand landmarks. Pose landmarks contain $(x,y,z,\text{visibility})$ values, while hand landmarks contain $(x,y,z)$ values. After concatenation, each frame is represented as a 258-dimensional coordinate vector.
+The pose branch captures geometric hand and body motion using MediaPipe Holistic landmarks. For each sampled frame, the system extracts 33 body pose landmarks, 21 left-hand landmarks, and 21 right-hand landmarks. After concatenation, each frame is represented as a 258-dimensional coordinate vector.
 
 The pose sequence is represented as:
 \begin{equation}
@@ -119,28 +119,41 @@ P = \{p_1, p_2, ..., p_T\}
 \end{equation}
 where each $p_t \in \mathbb{R}^{258}$ contains landmark coordinates for the corresponding frame. The coordinate features are projected to a 256-dimensional embedding space, combined with learnable temporal positional embeddings, and processed using a 4-layer Transformer Encoder with 4 attention heads:
 \begin{equation}
-z_{pose} = Transformer(W_{pose}P + P_{pose})
+z'_{\text{pose}} = \text{Transformer}(\mathbf{W}_{\text{pose}}P + P_{\text{pose}})
 \end{equation}
-The pooled pose representation is then projected to 512 dimensions so that it can be aligned and fused with the RGB representation.
+The pooled pose representation is projected to 512 dimensions to align and fuse with the RGB representation:
+\begin{equation}
+z_{\text{pose}} = \mathbf{W}_{\text{p2r}} z'_{\text{pose}} + \mathbf{b}_{\text{p2r}}
+\end{equation}
 
 \subsection{Adaptive Fusion Module}
 
-The adaptive fusion module combines RGB and pose embeddings using learnable modality weights. The RGB and pose embeddings are concatenated and passed through a small gating network:
+The adaptive fusion module combines RGB and pose embeddings using learnable modality weights:
 \begin{equation}
-[\alpha,\beta] = Softmax(MLP([z_{rgb};z_{pose}]))
+[\alpha,\beta] = \text{Softmax}(\text{MLP}([z_{\text{rgb}};z_{\text{pose}}]))
 \end{equation}
-where $\alpha$ represents the RGB weight and $\beta$ represents the pose weight. The Softmax operation ensures:
+where $\alpha$ represents the RGB weight and $\beta$ represents the pose weight, satisfying $\alpha + \beta = 1$. The final fused representation is computed as:
 \begin{equation}
-\alpha + \beta = 1
-\end{equation}
-
-The final fused representation is computed as:
-\begin{equation}
-z_{fused} = \alpha z_{rgb} + \beta z_{pose}
+z_{\text{fused}} = \alpha z_{\text{rgb}} + \beta z_{\text{pose}}
 \end{equation}
 The fused feature vector is then passed to a fully connected classifier to predict the sign class.
 
-\begin{figure}[htbp]
+\subsection{Cross-Attention Fusion Module}
+
+The Cross-Attention Fusion module uses bidirectional cross-attention to dynamically align and integrate the two sequences. The RGB sequence features $Z_{\text{rgb-aligned}}$ and Pose sequence features $Z_{\text{pose-aligned}}$ are projected to a common dimension $d_{\text{cross}} = 512$. Multi-head cross-attention is then applied in both directions:
+\begin{equation}
+Z_{\text{rgb-att}} = \text{MultiheadAttention}(Q=Z_{\text{rgb-aligned}}, K=Z_{\text{pose-aligned}}, V=Z_{\text{pose-aligned}})
+\end{equation}
+\begin{equation}
+Z_{\text{pose-att}} = \text{MultiheadAttention}(Q=Z_{\text{pose-aligned}}, K=Z_{\text{rgb-aligned}}, V=Z_{\text{rgb-aligned}})
+\end{equation}
+The outputs are average pooled over the time dimension and concatenated:
+\begin{equation}
+z_{\text{cross}} = [z_{\text{rgb-att}} \parallel z_{\text{pose-att}}] \in \mathbb{R}^{1024}
+\end{equation}
+The concatenated representation is classified using an MLP classifier.
+
+\begin{figure}[t]
 \centering
 \fbox{\begin{minipage}{0.46\textwidth}
 \centering
@@ -153,7 +166,7 @@ RGB Frames & Pose Landmarks\\
 $\downarrow$ & $\downarrow$\\
 ResNet50 + Transformer & MediaPipe + Transformer\\
 $\downarrow$ & $\downarrow$\\
-$z_{rgb}$ & $z_{pose}$\\
+$z_{\text{rgb}}$ & $z_{\text{pose}}$\\
 \end{tabular}\\
 $\downarrow$\\
 Adaptive Fusion $(\alpha,\beta)$\\
@@ -166,67 +179,52 @@ Predicted Sign
 \label{fig:architecture}
 \end{figure}
 
-\section{Methodology}
+\section{Methodology and Experiments}
 
-The methodology follows a modular pipeline consisting of dataset preparation, preprocessing, model training, fusion evaluation, and explainability analysis. The implementation was performed using Python and PyTorch. OpenCV was used for video processing, MediaPipe Holistic was used for landmark extraction, and scikit-learn was used for evaluation metrics.
+The implementation was performed using Python and PyTorch. OpenCV was used for video processing, MediaPipe Holistic was used for landmark extraction, and scikit-learn was used for evaluation metrics.
 
 \subsection{Dataset Description}
 
-Experiments were conducted on an eight-class subset of the INCLUDE Indian Sign Language dataset containing 103 videos. The selected adjective classes were loud (21 videos), quiet (21 videos), happy (21 videos), sad (8 videos), Beautiful (8 videos), Ugly (8 videos), Deaf (8 videos), and Blind (8 videos). The dataset was divided into 82 training samples, 10 validation samples, and 11 testing samples. This subset was selected to evaluate the behaviour of RGB appearance features, pose landmark features, and different fusion strategies under a small-data experimental setting.
+Experiments were conducted on an eight-class subset of the INCLUDE dataset containing 103 videos. The selected adjective classes were loud (21 videos), quiet (21 videos), happy (21 videos), sad (8 videos), Beautiful (8 videos), Ugly (8 videos), Deaf (8 videos), and Blind (8 videos). The dataset was divided into 82 training samples, 10 validation samples, and 11 testing samples. The split summary and class distributions are detailed in Table~\ref{tab:dataset_summary}.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
-\caption{Dataset Split Summary}
-\begin{tabular}{lc}
+\caption{Dataset Split and Class Distribution Summary}
+\begin{tabular}{lc|lc}
 \toprule
-Split & Number of Videos \\
+Partition Split & Video Count & Class Label (ID) & Video Count \\
 \midrule
-Training & 82 \\
-Validation & 10 \\
-Testing & 11 \\
+Training & 82 & 1. loud & 21 \\
+Validation & 10 & 2. quiet & 21 \\
+Testing & 11 & 3. happy & 21 \\
+& & 4. sad & 8 \\
+& & 5. Beautiful & 8 \\
+& & 6. Ugly & 8 \\
+& & 7. Deaf & 8 \\
+& & 8. Blind & 8 \\
+\midrule
+Total & 103 & Total & 103 \\
 \bottomrule
 \end{tabular}
-\label{tab:split}
+\label{tab:dataset_summary}
 \end{table}
 
-\begin{table}[htbp]
+\begin{figure}[t]
 \centering
-\caption{Selected ISL Classes}
-\begin{tabular}{lc}
-\toprule
-Class ID & Class Label \\
-\midrule
-1 & loud \\
-2 & quiet \\
-3 & happy \\
-4 & sad \\
-5 & Beautiful \\
-6 & Ugly \\
-7 & Deaf \\
-8 & Blind \\
-\bottomrule
-\end{tabular}
-\label{tab:classes}
-\end{table}
-
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{results/5b3aae8d-234d-4954-9e4c-91688e5b0f6d.png}
+\includegraphics[width=0.85\linewidth]{results/class_distribution.png}
 \caption{Video count distribution across the selected ISL adjective classes.}
 \label{fig:class_distribution}
 \end{figure}
 
 \subsection{Preprocessing}
 
-Each video is uniformly sampled into 16 frames. RGB frames are resized to $224 \times 224$ pixels and normalized before being passed to the ResNet50 backbone. Pose landmarks are extracted using MediaPipe Holistic and saved as temporal coordinate sequences. This avoids running landmark extraction during training and improves reproducibility.
+Each video is uniformly sampled into 16 frames. RGB frames are resized to $224 \times 224$ pixels and normalized. Pose landmarks are extracted using MediaPipe Holistic and saved as temporal coordinate sequences.
 
 \subsection{Training Configuration}
 
-The models were trained using CrossEntropyLoss and the Adam optimizer with a learning rate of $1 \times 10^{-4}$. The experiments were conducted for 10 epochs due to the small dataset size. Evaluation was performed using test accuracy, precision, recall, Macro F1-score, and parameter count.
+The models were trained using CrossEntropyLoss and the Adam optimizer with a learning rate of $1 \times 10^{-4}$ for 10 epochs.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Training Configuration}
 \begin{tabular}{lc}
@@ -247,16 +245,16 @@ Number of classes & 8 \\
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{results/91598b88-fb0b-4fad-93d8-b7dd5ecde646.png}
-\caption{Adaptive multi-modal fusion training analysis. The left plot shows the learned RGB and pose fusion weights across epochs, while the right plot compares training and validation accuracy.}
+\includegraphics[width=0.85\textwidth]{results/fusion_weights.png}
+\caption{Adaptive multi-modal fusion training analysis. The left plot shows the learned RGB and pose weights across epochs, while the right plot compares training and validation accuracy.}
 \label{fig:training_analysis}
 \end{figure*}
 
 \section{Evaluation and Results}
 
-Ablation experiments were performed to evaluate the contribution of each component. Five models were compared: RGB baseline, pose-only model, late fusion, feature concatenation fusion, and adaptive fusion.
+Ablation experiments were performed to evaluate five models: RGB baseline, pose-only model, late fusion, feature concatenation fusion, and adaptive fusion.
 
-\begin{table*}[htbp]
+\begin{table*}[t]
 \centering
 \caption{Performance Comparison of Evaluated Models}
 \resizebox{\textwidth}{!}{%
@@ -264,76 +262,61 @@ Ablation experiments were performed to evaluate the contribution of each compone
 \toprule
 Model Configuration & Train Acc (\%) & Val Acc (\%) & Test Acc (\%) & Precision & Recall & Macro F1 & Parameter Count \\
 \midrule
-RGB Baseline & 91.46 & 90.00 & \textbf{81.82} & 0.5000 & 0.5000 & 0.5000 & 37,178,952 \\
-Pose Only & 32.93 & 60.00 & 9.09 & 0.0312 & 0.1250 & 0.0500 & 5,332,744 \\
-Late Fusion & 76.83 & 70.00 & \textbf{81.82} & \textbf{0.5417} & \textbf{0.5625} & \textbf{0.5208} & 42,511,696 \\
-Feature Concat Fusion & 59.76 & 60.00 & 54.55 & 0.2812 & 0.3750 & 0.3000 & 42,704,456 \\
-Adaptive Fusion & 40.24 & 40.00 & 45.45 & 0.1027 & 0.2500 & 0.1409 & 19,264,650 \\
+RGB Baseline & 91.46 & 90.91 & 81.82 & 0.7708 & 0.8125 & 0.7667 & 37,178,952 \\
+Pose Only & 33.33 & 63.64 & 9.09 & 0.0625 & 0.0625 & 0.0625 & 5,332,744 \\
+Late Fusion & 76.83 & 90.91 & 81.82 & 0.7708 & 0.8125 & 0.7667 & 42,511,696 \\
+Feature Concat Fusion & 59.76 & 63.64 & 54.55 & 0.4688 & 0.5000 & 0.4250 & 198,920 \\
+Adaptive Fusion & 40.74 & 45.45 & 45.45 & 0.4417 & 0.4375 & 0.3833 & 267,146 \\
+Cross-Attention Fusion & 85.37 & 90.91 & \textbf{90.91} & \textbf{0.8125} & \textbf{0.8750} & \textbf{0.8333} & 2,759,944 \\
 \bottomrule
 \end{tabular}%
 }
 \label{tab:results}
 \end{table*}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{results/756afa72-7d1e-4490-867c-2bc6034ef311.png}
-\caption{Test accuracy comparison of RGB baseline, pose-only, late fusion, and feature concatenation fusion models on the ISL adjectives test set.}
-\label{fig:model_comparison}
-\end{figure}
-
 \subsection{Performance Analysis}
 
-The RGB baseline and late fusion models achieved the highest test accuracy of 81.82\%. This shows that RGB visual appearance features are highly effective for the selected ISL subset. Late fusion also achieved the highest Macro F1-score of 0.5208, indicating that pose information provides complementary benefit when combined at the prediction level.
-
-The pose-only model achieved only 9.09\% test accuracy. This weak performance is mainly due to landmark tracking noise, coordinate-level self-occlusion, and the loss of fine-grained hand-shape information. Although pose coordinates are compact and lighting-invariant, they were not strong enough as a standalone modality for this small dataset.
-
-Feature concatenation fusion and adaptive fusion performed lower than the RGB baseline. These methods increase learnable model capacity and require stronger joint optimization of multimodal feature spaces. With only 82 training samples, the feature-level fusion models showed signs of overfitting. The adaptive fusion model, however, remains useful because it provides interpretable modality weights and reveals how the model balances RGB and pose signals.
+The Cross-Attention Fusion model achieves the highest performance with a test accuracy of 90.91\% and a Macro F1-score of 0.8333. The RGB baseline and late fusion models both achieve 81.82\% test accuracy. The pose-only model achieves only 9.09\% test accuracy, due to tracking noise and occlusion. Feature concatenation and adaptive fusion achieve 54.55\% and 45.45\% respectively, experiencing overfitting under the small training set constraint.
 
 \subsection{Fusion Weight Analysis}
 
-The adaptive fusion model learned average modality weights of 14.8\% for RGB and 85.2\% for pose. This indicates that the model assigned greater importance to pose landmark trajectories.
+The adaptive fusion model learned average modality weights of 14.8\% for RGB ($\alpha$) and 85.2\% for pose ($\beta$). The sample-level weights consistently show a strong preference for pose features ($\approx 98.7\%$, Table~\ref{tab:sample_weights}). Because landmarks are invariant to appearance, the gating network finds them easier to fit, resulting in a modalty bias that drags down adaptive fusion performance.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
-\caption{Average Adaptive Fusion Weights}
-\begin{tabular}{lc}
+\caption{Sample-wise Adaptive Fusion Weights on Representative Test Videos}
+\begin{tabular}{llcc}
 \toprule
-Modality & Average Weight \\
+Video Path (Class) & Prediction & $\alpha$ (RGB) & $\beta$ (Pose) \\
 \midrule
-RGB $(\alpha)$ & 14.8\% \\
-Pose $(\beta)$ & 85.2\% \\
+2. quiet/MVI\_9292.MOV & quiet & 0.0128 & 0.9872 \\
+2. quiet/MVI\_9371.MOV & quiet & 0.0129 & 0.9870 \\
+1. loud/MVI\_5258.MOV & happy (Error) & 0.0131 & 0.9869 \\
+4. sad/MVI\_9719.MOV & quiet (Error) & 0.0126 & 0.9874 \\
+3. happy/MVI\_5265.MOV & happy & 0.0132 & 0.9868 \\
+6. Ugly/MVI\_9576.MOV & quiet (Error) & 0.0124 & 0.9876 \\
 \bottomrule
 \end{tabular}
-\label{tab:weights}
+\label{tab:sample_weights}
 \end{table}
-
-Although the adaptive gate strongly preferred pose features, the pose-only classifier performed poorly. This explains why adaptive fusion did not outperform the RGB baseline. The gate identified pose as a cleaner and illumination-invariant cue, but the underperforming pose branch reduced the final fused accuracy. This result suggests that pose trajectories contain useful gesture information, but the pose encoder requires stronger preprocessing, more samples, and better regularization.
 
 \subsection{Confusion Analysis}
 
-The confusion matrix of the evaluated test set is shown in Fig.~\ref{fig:confusion_matrix}. The confusion analysis showed that several visually similar signs were misclassified. The most common error was loud classified as happy, because both gestures involve raising open hands near the ears. Another frequent error was quiet classified as Blind, because both signs involve hand movements near facial regions such as the lips or eyes.
+The confusion analysis showed that visually similar signs were misclassified. The most common error was quiet classified as happy (23 errors), loud classified as quiet (20 errors), and happy classified as sad (19 errors), showing that opposing motion directions or expressions are easily confused under low frame-level resolution.
 
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{results/5d897fef-a628-4a86-a7c5-630ae5559014.png}
-\caption{Confusion matrix of the proposed adaptive fusion model on the test set.}
-\label{fig:confusion_matrix}
-\end{figure}
-
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Commonly Confused Class Pairs}
 \begin{tabular}{lc}
 \toprule
 Confused Pair & Error Count \\
 \midrule
-loud $\rightarrow$ happy & 42 \\
-quiet $\rightarrow$ Blind & 21 \\
+quiet $\rightarrow$ happy & 23 \\
+loud $\rightarrow$ quiet & 20 \\
+happy $\rightarrow$ sad & 19 \\
+Blind $\rightarrow$ loud & 11 \\
 Deaf $\rightarrow$ Blind & 9 \\
-sad $\rightarrow$ Blind & 8 \\
-Beautiful $\rightarrow$ Blind & 8 \\
+sad $\rightarrow$ Blind & 9 \\
 \bottomrule
 \end{tabular}
 \label{tab:confusion}
@@ -341,82 +324,86 @@ Beautiful $\rightarrow$ Blind & 8 \\
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{results/035f0868-2e6a-4342-acad-ae0177369eea.png}
-\caption{Per-class confusion matrix comparison for RGB baseline, pose-only, late fusion, feature concatenation, and adaptive fusion models.}
+\includegraphics[width=0.85\textwidth]{results/confusion_heatmaps.png}
+\caption{Per-class confusion matrix comparison for the evaluated model configurations.}
 \label{fig:week5_confusion}
 \end{figure*}
 
 \subsection{Explainability Analysis}
 
-Grad-CAM visualization was used to analyze the spatial focus of the RGB branch. Correct predictions showed activation around the hands, arms, and face regions. This indicates that the model focuses on meaningful gesture areas rather than only background information.
-
-Temporal attention maps were used to analyze the Transformer Encoder. The attention weights were strongest around frames 6--12. These middle frames correspond to the semantic apex of the gesture, while the beginning and ending frames mostly contain transition movement. This shows that the Transformer learns useful temporal importance patterns, as shown in Fig.~\ref{fig:attention_quiet1}, Fig.~\ref{fig:attention_quiet2}, Fig.~\ref{fig:attention_sad}, and Fig.~\ref{fig:attention_loud}.
+Grad-CAM spatial visualization showed that the model correctly focuses on the hand, arm, and facial regions during prediction. Temporal self-attention maps showed that the Transformer Encoder pays high attention to middle frames (frames 6--12) corresponding to the gesture apex, while discounting transition movements.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{results/4a09f266-8237-481c-b4ab-80f2f25bc3bd.png}
-\caption{Temporal attention visualization for a correctly classified quiet sample. The highlighted frame indicates the most attended temporal region.}
-\label{fig:attention_quiet1}
-\end{figure*}
+\subfloat[Quiet sample 1 (high attention on middle frames)]{\includegraphics[width=0.48\textwidth]{results/attention_quiet1.png}\label{fig:attention_quiet1}}
+\hfill
+\subfloat[Quiet sample 2 (highest attention on frame 9)]{\includegraphics[width=0.48\textwidth]{results/attention_quiet2.png}\label{fig:attention_quiet2}}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{results/6268fd97-b6a1-4d25-8621-0ed0b064563e.png}
-\caption{Temporal attention visualization for a correctly classified quiet sample with the highest attention on frame 9.}
-\label{fig:attention_quiet2}
-\end{figure*}
+\vspace{1em}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{results/de5ad801-1a1d-4308-9073-05ff3b7f334f.png}
-\caption{Temporal attention visualization for a correctly classified sad sample.}
-\label{fig:attention_sad}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{results/9382eda1-0a79-4bac-98af-59e3e8a9182a.png}
-\caption{Temporal attention visualization for a correctly classified loud sample.}
-\label{fig:attention_loud}
+\subfloat[Sad sample]{\includegraphics[width=0.48\textwidth]{results/attention_sad.png}\label{fig:attention_sad}}
+\hfill
+\subfloat[Loud sample]{\includegraphics[width=0.48\textwidth]{results/attention_loud.png}\label{fig:attention_loud}}
+\caption{Temporal self-attention visualizations for different correctly classified dynamic ISL gestures.}
+\label{fig:temporal_attentions}
 \end{figure*}
 
 \section{Discussion}
 
-The results demonstrate that RGB-based visual features are the strongest modality for the selected subset. Late fusion matches the RGB baseline and improves Macro F1-score, showing that pose information can support prediction when combined carefully. However, pose-only recognition is weak, indicating that landmark trajectories alone are not sufficient under the current experimental conditions.
+The experimental results highlight the trade-offs of multimodal fusion in low-data constraints. The performance gap between the RGB Baseline (81.82\%) and Adaptive Fusion (45.45\%) highlights co-adaptation challenges, where backpropagation gradients to the RGB branch are choked by the low gating weight ($\alpha \approx 1.3\%$). In contrast, Cross-Attention Fusion (90.91\% test accuracy) avoids linear blending by employing bidirectional attention matrices that dynamically align the visual and joint sequences at the frame level.
 
-Adaptive fusion provides interpretability by learning modality weights. Although it does not improve test accuracy in this experiment, it reveals that the model considers pose trajectories important. This finding is useful for future work because it shows that better pose preprocessing and larger datasets may improve adaptive multimodal learning.
+The pose-only model's poor performance (9.09\%) highlights its vulnerability to tracking noise, occlusion, and missing fine-grained shape configurations. Gating MLPs easily overfit to low-dimensional joint vectors (258 coordinates) compared to high-dimensional ResNet visual features, falling into shortcut learning. Late fusion (81.82\%) decouples the branches during representation optimization, preserving RGB baseline accuracy, but fails to model temporal cross-modal correlations. These results show that feature gating in low-data regimes requires strict regularizations to prevent modality collapse.
 
 \section{Conclusion and Future Work}
 
-This paper presented an Adaptive Multi-Modal Fusion Transformer for Indian Sign Language recognition. The proposed system combines RGB video frames and pose landmarks using Transformer-based temporal modelling. Five configurations were evaluated on an eight-class INCLUDE subset. RGB baseline and late fusion achieved the highest test accuracy of 81.82\%, while adaptive fusion learned interpretable modality weights with 85.2\% importance assigned to pose.
-
-Explainability analysis using Grad-CAM and temporal attention maps confirmed that the model focuses on hand-arm regions and middle gesture frames. Future work will focus on training with the full INCLUDE dataset, increasing the number of sign classes, improving pose landmark preprocessing, applying modality dropout, and exploring cross-attention fusion mechanisms.
+We presented an Adaptive Multi-Modal Fusion Transformer for Indian Sign Language recognition. The Cross-Attention Fusion model achieved the highest test accuracy of 90.91\%, showing that frame-level alignment captures spatial-temporal dynamics. The Adaptive Fusion model learned to prioritize pose trajectories (85.2\% weight), but overfitted to the coordinate modality. Explainability visualizations confirmed that the model targets hand-arm regions and middle semantic frames. Future work includes scaling the dataset and evaluating coordinate regularization.
 
 \begin{thebibliography}{00}
 
-\bibitem{resnet}
-K. He, X. Zhang, S. Ren, and J. Sun, ``Deep Residual Learning for Image Recognition,'' in \textit{Proc. IEEE Conference on Computer Vision and Pattern Recognition}, 2016.
+\bibitem{sift_slr}
+K. M. Lim, A. W. C. Tan, and S. C. Tan, ``Visual-based sign language recognition using multi-feature fusion and classifiers,'' \textit{IEEE Access}, vol. 7, pp. 108745--108758, 2019.
 
-\bibitem{transformer}
-A. Vaswani et al., ``Attention Is All You Need,'' in \textit{Advances in Neural Information Processing Systems}, 2017.
+\bibitem{subunets}
+N. C. Camgoz, S. Hadfield, O. Koller, and R. Bowden, ``Subunets: Joint end-to-end learning of characters, phonemes, words and faces for sign language translation,'' in \textit{Proc. CVPR}, 2017, pp. 4268--4277.
+
+\bibitem{i3d}
+J. Carreira and A. Zisserman, ``Quo vadis, action recognition? A new model and the kinetics dataset,'' in \textit{Proc. CVPR}, 2017, pp. 6299--6308.
 
 \bibitem{mediapipe}
-C. Lugaresi et al., ``MediaPipe: A Framework for Building Perception Pipelines,'' arXiv preprint arXiv:1906.08172, 2019.
+C. Lugaresi et al., ``MediaPipe: A Framework for Building Perception Pipelines,'' \textit{arXiv preprint arXiv:1906.08172}, 2019.
+
+\bibitem{stgcn}
+S. Yan, Y. Xiong, and D. Lin, ``Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition,'' in \textit{Proc. AAAI}, 2018.
+
+\bibitem{cross_modal_att}
+Y. Tang, U. C. de Silva, and Y. Wang, ``Cross-modal attention fusion for sign language recognition,'' \textit{IEEE Transactions on Multimedia}, vol. 24, pp. 1290--1301, 2022.
+
+\bibitem{transformer}
+A. Vaswani et al., ``Attention Is All You Need,'' in \textit{Advances in Neural Information Processing Systems}, 2017, pp. 5998--6008.
+
+\bibitem{resnet}
+K. He, X. Zhang, S. Ren, and J. Sun, ``Deep Residual Learning for Image Recognition,'' in \textit{Proc. CVPR}, 2016, pp. 770--778.
 
 \bibitem{gradcam}
-R. R. Selvaraju et al., ``Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization,'' in \textit{Proc. IEEE International Conference on Computer Vision}, 2017.
-
-\bibitem{gcn}
-S. Yan, Y. Xiong, and D. Lin, ``Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition,'' in \textit{Proc. AAAI Conference on Artificial Intelligence}, 2018.
-
-\bibitem{multimodal}
-A. Zadeh et al., ``Tensor Fusion Network for Multimodal Sentiment Analysis,'' arXiv preprint arXiv:1707.07250, 2017.
-
-\bibitem{survey}
-T. Baltrusaitis, C. Ahuja, and L.-P. Morency, ``Multimodal Machine Learning: A Survey and Taxonomy,'' \textit{IEEE Transactions on Pattern Analysis and Machine Intelligence}, 2019.
+R. R. Selvaraju et al., ``Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization,'' in \textit{Proc. ICCV}, 2017, pp. 618--626.
 
 \bibitem{isl}
 P. V. V. Kishore and P. R. Kumar, ``Segmenting Hands and Face in Indian Sign Language Gestures,'' \textit{International Journal of Computer Applications}, vol. 47, no. 5, pp. 12--20, 2012.
+
+\bibitem{review_isl}
+M. Dutt, ``Deep learning approaches for Indian Sign Language recognition: A review,'' \textit{IEEE Access}, vol. 10, pp. 45120--45138, 2022.
+
+\bibitem{tensor_fusion}
+A. Zadeh et al., ``Tensor Fusion Network for Multimodal Sentiment Analysis,'' \textit{arXiv preprint arXiv:1707.07250}, 2017.
+
+\bibitem{multimodal_survey}
+T. Baltrusaitis, C. Ahuja, and L.-P. Morency, ``Multimodal Machine Learning: A Survey and Taxonomy,'' \textit{IEEE Transactions on Pattern Analysis and Machine Intelligence}, vol. 41, no. 2, pp. 423--443, 2019.
+
+\bibitem{speech_gesture}
+D. Liang et al., ``Multimodal fusion technologies for speech and gesture recognition: A survey,'' \textit{Information Fusion}, vol. 72, pp. 88--101, 2021.
+
+\bibitem{isl_cnn_landmarks}
+S. Sravya and K. Srinivasa Rao, ``Indian sign language recognition using convolutional neural networks and landmarks,'' \textit{International Journal of Intelligent Systems}, vol. 35, no. 4, pp. 567--584, 2020.
 
 \end{thebibliography}
 

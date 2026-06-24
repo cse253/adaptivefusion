@@ -1,72 +1,72 @@
 Adaptive Multi-Modal Fusion Transformer - Full Project Run Log
-Started: Mon Jun 22 18:25:50 2026
+Started: Wed Jun 24 19:42:08 2026
 ================================================================================
 
 
 --- STEP 1: Dataset Exploration (scripts/explore_dataset.py) ---
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b2a00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242b3d80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec2dc0] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
 [[INFO] Scanning: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives
 [INFO] Found 8 classes, computing durations ...
   [WARN] Could not read: MVI_5177.MOV
@@ -193,56 +193,56 @@ Started: Mon Jun 22 18:25:50 2026
 [INFO] CSV saved  -> D:\NIT proj\Adaptive_signlang\results\dataset_statistics.csv
 [INFO] Plot saved -> D:\NIT proj\Adaptive_signlang\results\class_distribution.png
 [INFO] Sample grid saved -> D:\NIT proj\Adaptive_signlang\results\class_sample_frames.png
-mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000168242bce00] moov atom not found
+mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0000023acfec4980] moov atom not found
 
-Duration: 38.14 seconds
+Duration: 37.70 seconds
 Return Code: 0
 
 --- STEP 2: Train/Val/Test Split (scripts/split_dataset.py) ---
@@ -251,79 +251,62 @@ Return Code: 0
 [INFO] Total videos : 103
 [INFO] Classes      : 8
 [INFO] Label map    : {'loud': 0, 'quiet': 1, 'happy': 2, 'sad': 3, 'Beautiful': 4, 'Ugly': 5, 'Deaf': 6, 'Blind': 7}
-[WARN] Stratified split failed (The least populated classes in y have only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2. Classes with too few members are: [3]). Using random split.
+[INFO] Custom class-wise stratified split succeeded.
 
 [INFO] Splits saved to: D:\NIT proj\Adaptive_signlang\splits
-  train.csv -> 82 samples
-  val.csv   -> 10 samples
+  train.csv -> 81 samples
+  val.csv   -> 11 samples
   test.csv  -> 11 samples
 
-  train.csv (82 samples):
-    Beautiful       7
+  train.csv (81 samples):
+    Beautiful       6
     Blind           6
-    Deaf            7
+    Deaf            6
     Ugly            6
     happy           17
-    loud            16
-    quiet           16
-    sad             7
+    loud            17
+    quiet           17
+    sad             6
 
-  val.csv (10 samples):
+  val.csv (11 samples):
     Beautiful       1
-    Blind           2
+    Blind           1
     Deaf            1
-    happy           3
+    Ugly            1
+    happy           2
     loud            2
-    quiet           1
-
-  test.csv (11 samples):
-    Ugly            2
-    happy           1
-    loud            3
-    quiet           4
+    quiet           2
     sad             1
 
-Duration: 4.76 seconds
+  test.csv (11 samples):
+    Beautiful       1
+    Blind           1
+    Deaf            1
+    Ugly            1
+    happy           2
+    loud            2
+    quiet           2
+    sad             1
+
+Duration: 5.47 seconds
 Return Code: 0
 
 --- STEP 3: RGB Baseline Training (scripts/train.py) ---
 [INFO] Pre-trained model found at checkpoints\best_model.pth. Skipping training (use --force to retrain).
 
-Duration: 10.82 seconds
+Duration: 10.24 seconds
 Return Code: 0
 
 --- STEP 4: RGB Baseline Evaluation (scripts/evaluate.py) ---
 [INFO] Using device: cpu
 [INFO] Test samples: 11
 [INFO] Loaded checkpoint: D:\NIT proj\Adaptive_signlang\checkpoints\best_model.pth
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_9292.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_9371.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\1. loud\MVI_5258.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\4. sad\MVI_9719.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\1. loud\MVI_9290.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_9538.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_9293.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\3. happy\MVI_5265.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\1. loud\MVI_9368.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\6. Ugly\MVI_9576.MOV
-  [WARN] Cannot open video: D:\NIT proj\Adaptive_signlang\datasets\Adjectives_1of8\Adjectives\6. Ugly\MVI_9846.MOV
 
-[RESULT] Test Accuracy: 0.3636 (36.36%)
+[RESULT] Test Accuracy: 0.8182 (81.82%)
 [INFO] Report saved  -> D:\NIT proj\Adaptive_signlang\results\classification_report.txt
 [INFO] Confusion matrix saved -> D:\NIT proj\Adaptive_signlang\results\confusion_matrix.png
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215c33c0] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000177ad5db5c0] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000177ad5db5c0] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000177ad5db5c0] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
-[mov,mp4,m4a,3gp,3g2,mj2 @ 00000178215d3f80] moov atom not found
 
-Duration: 36.38 seconds
+Duration: 15.42 seconds
 Return Code: 0
 
 --- STEP 5: Pose Landmark Extraction (scripts/extract_pose.py) ---
@@ -333,20 +316,373 @@ INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
 [INFO] Frames   : 16  |  Landmark dim: 258
 
 [CLASS] 1. loud  (21 videos)
-  [WARN] Cannot open: MVI_5177.MOV
-  [WARN] No landmarks detected: MVI_5177.MOV
-Traceback (most recent call last):
-  File "D:\NIT proj\Adaptive_signlang\scripts\extract_pose.py", line 157, in <module>
-    print(f"  [DONE] {video_path.name} \u2192 {out_path.name}  shape={sequence.shape}")
-  File "C:\Users\Admin\AppData\Local\Programs\Python\Python311\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 22: character maps to <undefined>
+  [SKIP] MVI_5177.MOV already extracted
+  [SKIP] MVI_5178.MOV already extracted
+  [SKIP] MVI_5179.MOV already extracted
+  [SKIP] MVI_5257.MOV already extracted
+  [SKIP] MVI_5258.MOV already extracted
+  [SKIP] MVI_5259.MOV already extracted
+  [SKIP] MVI_5335.MOV already extracted
+  [SKIP] MVI_5336.MOV already extracted
+  [SKIP] MVI_5337.MOV already extracted
+  [SKIP] MVI_9289.MOV already extracted
+  [SKIP] MVI_9290.MOV already extracted
+  [SKIP] MVI_9291.MOV already extracted
+  [SKIP] MVI_9368.MOV already extracted
+  [SKIP] MVI_9369.MOV already extracted
+  [SKIP] MVI_9370.MOV already extracted
+  [SKIP] MVI_9448.MOV already extracted
+  [SKIP] MVI_9449.MOV already extracted
+  [SKIP] MVI_9450.MOV already extracted
+  [SKIP] MVI_9534.MOV already extracted
+  [SKIP] MVI_9535.MOV already extracted
+  [SKIP] MVI_9536.MOV already extracted
+[CLASS] 2. quiet  (21 videos)
+  [SKIP] MVI_5180.MOV already extracted
+  [SKIP] MVI_5181.MOV already extracted
+  [SKIP] MVI_5182.MOV already extracted
+  [SKIP] MVI_5260.MOV already extracted
+  [SKIP] MVI_5261.MOV already extracted
+  [SKIP] MVI_5262.MOV already extracted
+  [SKIP] MVI_5338.MOV already extracted
+  [SKIP] MVI_5339.MOV already extracted
+  [SKIP] MVI_5340.MOV already extracted
+  [SKIP] MVI_9292.MOV already extracted
+  [SKIP] MVI_9293.MOV already extracted
+  [SKIP] MVI_9294.MOV already extracted
+  [SKIP] MVI_9371.MOV already extracted
+  [SKIP] MVI_9372.MOV already extracted
+  [SKIP] MVI_9373.MOV already extracted
+  [SKIP] MVI_9451.MOV already extracted
+  [SKIP] MVI_9452.MOV already extracted
+  [SKIP] MVI_9453.MOV already extracted
+  [SKIP] MVI_9537.MOV already extracted
+  [SKIP] MVI_9538.MOV already extracted
+  [SKIP] MVI_9539.MOV already extracted
+[CLASS] 3. happy  (21 videos)
+  [SKIP] MVI_5183.MOV already extracted
+  [SKIP] MVI_5184.MOV already extracted
+  [SKIP] MVI_5185.MOV already extracted
+  [SKIP] MVI_5263.MOV already extracted
+  [SKIP] MVI_5264.MOV already extracted
+  [SKIP] MVI_5265.MOV already extracted
+  [SKIP] MVI_5341.MOV already extracted
+  [SKIP] MVI_5342.MOV already extracted
+  [SKIP] MVI_5343.MOV already extracted
+  [SKIP] MVI_9295.MOV already extracted
+  [SKIP] MVI_9296.MOV already extracted
+  [SKIP] MVI_9297.MOV already extracted
+  [SKIP] MVI_9374.MOV already extracted
+  [SKIP] MVI_9375.MOV already extracted
+  [SKIP] MVI_9376.MOV already extracted
+  [SKIP] MVI_9454.MOV already extracted
+  [SKIP] MVI_9455.MOV already extracted
+  [SKIP] MVI_9456.MOV already extracted
+  [SKIP] MVI_9540.MOV already extracted
+  [SKIP] MVI_9541.MOV already extracted
+  [SKIP] MVI_9542.MOV already extracted
+[CLASS] 4. sad  (8 videos)
+  [SKIP] MVI_9565.MOV already extracted
+  [SKIP] MVI_9566.MOV already extracted
+  [SKIP] MVI_9567.MOV already extracted
+  [SKIP] MVI_9568.MOV already extracted
+  [SKIP] MVI_9719.MOV already extracted
+  [SKIP] MVI_9720.MOV already extracted
+  [SKIP] MVI_9721.MOV already extracted
+  [SKIP] MVI_9722.MOV already extracted
+[CLASS] 5. Beautiful  (8 videos)
+  [SKIP] MVI_9569.MOV already extracted
+  [SKIP] MVI_9570.MOV already extracted
+  [SKIP] MVI_9571.MOV already extracted
+  [SKIP] MVI_9572.MOV already extracted
+  [SKIP] MVI_9723.MOV already extracted
+  [SKIP] MVI_9724.MOV already extracted
+  [SKIP] MVI_9725.MOV already extracted
+  [SKIP] MVI_9726.MOV already extracted
+[CLASS] 6. Ugly  (8 videos)
+  [SKIP] MVI_9576.MOV already extracted
+  [SKIP] MVI_9577.MOV already extracted
+  [SKIP] MVI_9578.MOV already extracted
+  [SKIP] MVI_9579.MOV already extracted
+  [SKIP] MVI_9844.MOV already extracted
+  [SKIP] MVI_9845.MOV already extracted
+  [SKIP] MVI_9846.MOV already extracted
+  [SKIP] MVI_9847.MOV already extracted
+[CLASS] 7. Deaf  (8 videos)
+  [SKIP] MVI_9580.MOV already extracted
+  [SKIP] MVI_9581.MOV already extracted
+  [SKIP] MVI_9582.MOV already extracted
+  [SKIP] MVI_9583.MOV already extracted
+  [SKIP] MVI_9848.MOV already extracted
+  [SKIP] MVI_9849.MOV already extracted
+  [SKIP] MVI_9850.MOV already extracted
+  [SKIP] MVI_9851.MOV already extracted
+[CLASS] 8. Blind  (8 videos)
+  [SKIP] MVI_9584.MOV already extracted
+  [SKIP] MVI_9585.MOV already extracted
+  [SKIP] MVI_9586.MOV already extracted
+  [SKIP] MVI_9587.MOV already extracted
+  [SKIP] MVI_9852.MOV already extracted
+  [SKIP] MVI_9853.MOV already extracted
+  [SKIP] MVI_9854.MOV already extracted
+  [SKIP] MVI_9855.MOV already extracted
 
-Duration: 4.26 seconds
-Return Code: 1
+=======================================================
+  Extraction complete
+  Total processed : 103
+  Zero-landmark   : 0  (saved as zeros, check these videos)
+  Saved to        : D:\NIT proj\Adaptive_signlang\datasets\pose_data
+=======================================================
 
-[ABORTED] Critical step failed.
+Duration: 3.60 seconds
+Return Code: 0
+
+--- STEP 6: Pose Branch Training (scripts/train_pose.py) ---
+[INFO] Pre-trained model found at checkpoints\best_pose_model.pth. Skipping training (use --force to retrain).
+
+Duration: 6.18 seconds
+Return Code: 0
+
+--- STEP 7: Multi-Modal Fusion Training (scripts/train_fusion.py) ---
+[INFO] Pre-trained models found. Skipping training (use --force to retrain).
+
+Duration: 9.01 seconds
+Return Code: 0
+
+--- STEP 8: Adaptive Model Sanity Test (models/adaptive_model.py) ---
+[TEST] Building AdaptiveMultiModalModel (embedding mode) ...
+[INFO] Freezing feature encoders in Adaptive Fusion Model.
+  logits       : torch.Size([2, 8])
+  alpha        : 0.4862  beta : 0.5138
+  alpha + beta : 1.0000  (must be 1.0000)
+[TEST] PASSED
+
+Duration: 4.82 seconds
+Return Code: 0
+
+--- STEP 9: Adaptive Fusion Training (scripts/train_adaptive.py) ---
+[INFO] Pre-trained model found at checkpoints\best_adaptive_model.pth. Skipping training (use --force to retrain).
+
+Duration: 10.28 seconds
+Return Code: 0
+
+--- STEP 10: Fusion Weights Plotting (scripts/visualize_fusion_weights.py) ---
+
+[INFO] Fusion weight analysis:
+  Overall avg alpha (RGB)  : 0.1197
+  Overall avg beta (Pose) : 0.8803
+  -> Model relies MORE on Pose (88.03% vs 11.97%)
+
+[INFO] Plot saved -> D:\NIT proj\Adaptive_signlang\results\fusion_weights.png
+
+Duration: 3.09 seconds
+Return Code: 0
+
+--- STEP 11: Week 4 Model Comparison (scripts/week4_compare.py) ---
+[INFO] Device: cpu
+
+[A] RGB Baseline (fast — using precomputed embeddings) ...
+  Train 100.00%  Val 90.91%  Test 81.82%
+[B] Pose Only ...
+  Train 92.59%  Val 54.55%  Test 9.09%
+[C] Late Fusion (raw video frames) ...
+  Train 100.00%  Val 90.91%  Test 81.82%
+[D] Feature Concat Fusion (raw video frames) ...
+[INFO] Freezing feature encoders in Concat Fusion Model.
+  Train 100.00%  Val 63.64%  Test 54.55%
+[E] Adaptive Fusion (precomputed embeddings) ...
+[INFO] Freezing feature encoders in Adaptive Fusion Model.
+  Train 100.00%  Val 45.45%  Test 45.45%
+[F] Cross-Attention Fusion (raw video frames) ...
+[INFO] Freezing feature encoders in Cross-Attention Fusion Model.
+  Train 100.00%  Val 90.91%  Test 90.91%
+
+======================================================================
+  Model                        Train      Val     Test       Params
+  -------------------------  --------  --------  --------  ------------
+  RGB Baseline              100.00%   90.91%   81.82%    37,178,952
+  Pose Only                  92.59%   54.55%    9.09%     5,332,744
+  Late Fusion               100.00%   90.91%   81.82%    42,511,696
+  Feature Concat Fusion     100.00%   63.64%   54.55%       198,920
+  Adaptive Fusion           100.00%   45.45%   45.45%       267,146
+  Cross-Attention Fusion    100.00%   90.91%   90.91%     2,759,944
+======================================================================
+
+  Best model: Cross-Attention Fusion (Test Acc: 90.91%)
+
+-- Adaptive Fusion Analysis ------------------------------------------
+  Does adaptive fusion improve accuracy? : NO (45.45% vs RGB 81.82%)
+  Model relies more on        : Pose
+  Average alpha (RGB weight)  : 0.1197
+  Average beta  (Pose weight) : 0.8803
+----------------------------------------------------------------------
+
+[INFO] CSV saved  -> D:\NIT proj\Adaptive_signlang\results\week4_comparison.csv
+[INFO] Chart saved -> D:\NIT proj\Adaptive_signlang\results\week4_comparison.png
+
+Duration: 14.99 seconds
+Return Code: 0
+
+--- STEP 12: Week 5 Ablation Study (scripts/run_ablation.py) ---
+[INFO] Device : cpu
+
+[INFO] Note: RGB-based models evaluate on val+test; train acc from logs.
+
+[A] RGB Baseline ...
+  Test Acc=81.82%  F1=0.7667
+[B] Pose Only ...
+  Test Acc=9.09%  F1=0.0625
+[C] Late Fusion ...
+  Test Acc=81.82%  F1=0.7667
+[D] Feature Concat Fusion ...
+[INFO] Freezing feature encoders in Concat Fusion Model.
+  Test Acc=54.55%  F1=0.4250
+[E] Adaptive Fusion ...
+[INFO] Freezing feature encoders in Adaptive Fusion Model.
+  Test Acc=45.45%  F1=0.3833
+[F] Cross-Attention Fusion ...
+[INFO] Freezing feature encoders in Cross-Attention Fusion Model.
+  Test Acc=90.91%  F1=0.8333
+
+==========================================================================================
+  Model                      Train     Val    Test    Prec  Recall      F1       Params
+  ------------------------  -------  -------  -------  -------  -------  -------  ------------
+  RGB Baseline             91.46%  90.91%  81.82%  0.7708  0.8125  0.7667    37,178,952
+  Pose Only                33.33%  63.64%   9.09%  0.0625  0.0625  0.0625     5,332,744
+  Late Fusion              76.83%  90.91%  81.82%  0.7708  0.8125  0.7667    42,511,696
+  Feature Concat Fusion    59.76%  63.64%  54.55%  0.4688  0.5000  0.4250       198,920
+  Adaptive Fusion          40.74%  45.45%  45.45%  0.4417  0.4375  0.3833       267,146
+  Cross-Attention Fusion   85.37%  90.91%  90.91%  0.8125  0.8750  0.8333     2,759,944
+==========================================================================================
+
+  Best model: Cross-Attention Fusion (Test Acc: 90.91%)
+
+[INFO] CSV saved -> D:\NIT proj\Adaptive_signlang\results\ablation_results.csv
+[INFO] Chart saved -> D:\NIT proj\Adaptive_signlang\results\ablation_accuracy_comparison.png
+
+Duration: 17.75 seconds
+Return Code: 0
+
+--- STEP 13: Grad-CAM Spatial Explainability (scripts/grad_cam.py) ---
+[INFO] Mock Grad-CAM outputs will be saved to: D:\NIT proj\Adaptive_signlang\results\gradcam
+[INFO] Processing 5 test samples with mock generator...
+  [1/5] MVI_5341.MOV  (label=happy)
+    True=happy       Pred=happy       [OK]
+    Saved -> D:\NIT proj\Adaptive_signlang\results\gradcam\sample_01_MVI_5341
+  [2/5] MVI_9535.MOV  (label=loud)
+    True=loud        Pred=loud        [OK]
+    Saved -> D:\NIT proj\Adaptive_signlang\results\gradcam\sample_02_MVI_9535
+  [3/5] MVI_9850.MOV  (label=Deaf)
+    True=Deaf        Pred=Deaf        [OK]
+    Saved -> D:\NIT proj\Adaptive_signlang\results\gradcam\sample_03_MVI_9850
+  [4/5] MVI_9854.MOV  (label=Blind)
+    True=Blind       Pred=Blind       [OK]
+    Saved -> D:\NIT proj\Adaptive_signlang\results\gradcam\sample_04_MVI_9854
+  [5/5] MVI_9538.MOV  (label=quiet)
+    True=quiet       Pred=quiet       [OK]
+    Saved -> D:\NIT proj\Adaptive_signlang\results\gradcam\sample_05_MVI_9538
+
+[INFO] Grad-CAM complete. Results in D:\NIT proj\Adaptive_signlang\results\gradcam
+
+Duration: 8.78 seconds
+Return Code: 0
+
+--- STEP 14: Transformer Attention Maps (scripts/attention_visualization.py) ---
+[INFO] Temporal attention plots will be saved to: D:\NIT proj\Adaptive_signlang\results\attention_maps
+[INFO] Visualizing attention for 5 samples...
+  [1/5] MVI_5341
+    True=happy       Pred=happy       [OK]  Peak frame: 9
+    Saved -> D:\NIT proj\Adaptive_signlang\results\attention_maps\sample_01_MVI_5341.png
+  [2/5] MVI_9535
+    True=loud        Pred=loud        [OK]  Peak frame: 8
+    Saved -> D:\NIT proj\Adaptive_signlang\results\attention_maps\sample_02_MVI_9535.png
+  [3/5] MVI_9850
+    True=Deaf        Pred=Deaf        [OK]  Peak frame: 9
+    Saved -> D:\NIT proj\Adaptive_signlang\results\attention_maps\sample_03_MVI_9850.png
+  [4/5] MVI_9854
+    True=Blind       Pred=Blind       [OK]  Peak frame: 9
+    Saved -> D:\NIT proj\Adaptive_signlang\results\attention_maps\sample_04_MVI_9854.png
+  [5/5] MVI_9538
+    True=quiet       Pred=quiet       [OK]  Peak frame: 8
+    Saved -> D:\NIT proj\Adaptive_signlang\results\attention_maps\sample_05_MVI_9538.png
+
+[INFO] Attention visualization complete. Results in D:\NIT proj\Adaptive_signlang\results\attention_maps
+
+Duration: 8.35 seconds
+Return Code: 0
+
+--- STEP 15: Fusion Weight Analysis (scripts/analyze_fusion_weights.py) ---
+[INFO] Device : cpu
+
+[INFO] Freezing feature encoders in Adaptive Fusion Model.
+[INFO] Collecting fusion weights from test set ...
+[INFO] Collecting fusion weights from train set ...
+[INFO] Collecting fusion weights from val set ...
+[INFO] Total records collected: 103
+
+============================================================
+  ADAPTIVE FUSION WEIGHT ANALYSIS
+============================================================
+  Total samples      : 103
+  Average alpha (RGB): 0.1103  (std=0.1099)
+  Average beta (Pose): 0.8897  (std=0.1099)
+  Dominant modality  : Pose
+  Samples prefer RGB : 0 / 103
+  Samples prefer Pose: 103 / 103
+============================================================
+
+  Per-class average alpha (RGB weight):
+    Beautiful   : alpha=0.1617  (std=0.0400)  -> prefers Pose
+    Blind       : alpha=0.0772  (std=0.0018)  -> prefers Pose
+    Deaf        : alpha=0.4639  (std=0.0281)  -> prefers Pose
+    Ugly        : alpha=0.0659  (std=0.0071)  -> prefers Pose
+    happy       : alpha=0.1062  (std=0.0290)  -> prefers Pose
+    loud        : alpha=0.0621  (std=0.0333)  -> prefers Pose
+    quiet       : alpha=0.0554  (std=0.0236)  -> prefers Pose
+    sad         : alpha=0.0639  (std=0.0097)  -> prefers Pose
+
+[INFO] CSV saved -> D:\NIT proj\Adaptive_signlang\results\fusion_weight_analysis.csv
+[INFO] Distribution plot saved -> D:\NIT proj\Adaptive_signlang\results\fusion_weight_distribution.png
+
+Duration: 14.80 seconds
+Return Code: 0
+
+--- STEP 16: Confusion Matrix Analysis (scripts/confusion_analysis.py) ---
+[INFO] Device : cpu
+
+[A] RGB Baseline (on val+test only to save time) ...
+  22 samples, 19 correct, 3 errors
+[B] Pose Only ...
+  103 samples, 35 correct, 68 errors
+[C] Late Fusion (val+test only) ...
+  22 samples, 19 correct, 3 errors
+[D] Feature Concat Fusion (val+test only) ...
+[INFO] Freezing feature encoders in Concat Fusion Model.
+  22 samples, 13 correct, 9 errors
+[E] Adaptive Fusion ...
+[INFO] Freezing feature encoders in Adaptive Fusion Model.
+  103 samples, 43 correct, 60 errors
+[F] Cross-Attention Fusion (val+test only) ...
+[INFO] Freezing feature encoders in Cross-Attention Fusion Model.
+  22 samples, 20 correct, 2 errors
+
+  Top confused class pairs (all models combined):
+    quiet        -> happy        : 23 errors
+    loud         -> quiet        : 20 errors
+    happy        -> sad          : 19 errors
+    Blind        -> loud         : 11 errors
+    sad          -> Blind        : 9 errors
+    Deaf         -> Blind        : 9 errors
+    sad          -> Beautiful    : 8 errors
+    Beautiful    -> Ugly         : 8 errors
+    loud         -> happy        : 7 errors
+    Ugly         -> Deaf         : 6 errors
+
+[INFO] CSV saved -> D:\NIT proj\Adaptive_signlang\results\confusion_analysis.csv
+[INFO] Heatmaps saved -> D:\NIT proj\Adaptive_signlang\results\confusion_heatmaps.png
+
+Duration: 21.13 seconds
+Return Code: 0
 
 ================================================================================
-Finished: Mon Jun 22 18:27:25 2026
+Finished: Wed Jun 24 19:45:20 2026

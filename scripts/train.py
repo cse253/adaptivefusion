@@ -130,6 +130,33 @@ def run_epoch(model, loader, criterion, optimizer, device, training: bool):
     return total_loss / total, correct / total
 
 
+class RGBEmbDataset(Dataset):
+    """
+    Loads precomputed ResNet50 embeddings (16, 2048) directly.
+    Caches features in memory to avoid repeated slow disk reads on CPU.
+    """
+    def __init__(self, csv_path: str):
+        self.df = pd.read_csv(csv_path)
+        self.emb_dir = Path(ROOT) / "datasets" / "rgb_embeddings"
+        
+        self.data = []
+        for idx in range(len(self.df)):
+            row = self.df.iloc[idx]
+            stem = Path(row["video_path"]).stem
+            npy = self.emb_dir / row["label"] / (stem + ".npy")
+            if npy.exists():
+                emb = torch.tensor(np.load(str(npy)).astype(np.float32))
+            else:
+                emb = torch.zeros(16, 2048)
+            self.data.append((emb, int(row["label_id"])))
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     # Check if checkpoint already exists to save time on CPU
@@ -150,11 +177,10 @@ if __name__ == "__main__":
 
     # Datasets & loaders
     num_frames = cfg["data"]["num_frames"]
-    img_size   = cfg["data"]["img_size"]
     batch_size = cfg["training"]["batch_size"]
 
-    train_dataset = VideoDataset(Path(ROOT) / cfg["data"]["train_csv"], num_frames, img_size)
-    val_dataset   = VideoDataset(Path(ROOT) / cfg["data"]["val_csv"],   num_frames, img_size)
+    train_dataset = RGBEmbDataset(Path(ROOT) / cfg["data"]["train_csv"])
+    val_dataset   = RGBEmbDataset(Path(ROOT) / cfg["data"]["val_csv"])
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,  num_workers=0)
     val_loader   = DataLoader(val_dataset,   batch_size=batch_size, shuffle=False, num_workers=0)

@@ -1,11 +1,12 @@
 video_path,label,label_id
-datasets\Adjectives_1of8\Adjectives\3. happy\MVI_9542.MOV,happy,2
-datasets\Adjectives_1of8\Adjectives\1. loud\MVI_5177.MOV,loud,0
-datasets\Adjectives_1of8\Adjectives\8. Blind\MVI_9853.MOV,Blind,7
-datasets\Adjectives_1of8\Adjectives\3. happy\MVI_5183.MOV,happy,2
-datasets\Adjectives_1of8\Adjectives\8. Blind\MVI_9586.MOV,Blind,7
-datasets\Adjectives_1of8\Adjectives\3. happy\MVI_5263.MOV,happy,2
-datasets\Adjectives_1of8\Adjectives\1. loud\MVI_9534.MOV,loud,0
-datasets\Adjectives_1of8\Adjectives\5. Beautiful\MVI_9724.MOV,Beautiful,4
-datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_5262.MOV,quiet,1
+datasets\Adjectives_1of8\Adjectives\3. happy\MVI_9376.MOV,happy,2
+datasets\Adjectives_1of8\Adjectives\1. loud\MVI_9290.MOV,loud,0
 datasets\Adjectives_1of8\Adjectives\7. Deaf\MVI_9583.MOV,Deaf,6
+datasets\Adjectives_1of8\Adjectives\8. Blind\MVI_9587.MOV,Blind,7
+datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_9293.MOV,quiet,1
+datasets\Adjectives_1of8\Adjectives\1. loud\MVI_9370.MOV,loud,0
+datasets\Adjectives_1of8\Adjectives\6. Ugly\MVI_9579.MOV,Ugly,5
+datasets\Adjectives_1of8\Adjectives\3. happy\MVI_9296.MOV,happy,2
+datasets\Adjectives_1of8\Adjectives\5. Beautiful\MVI_9572.MOV,Beautiful,4
+datasets\Adjectives_1of8\Adjectives\2. quiet\MVI_9373.MOV,quiet,1
+datasets\Adjectives_1of8\Adjectives\4. sad\MVI_9568.MOV,sad,3

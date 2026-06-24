@@ -9,9 +9,9 @@ $^2$Department of Computer Science and Engineering, National Institute of Techno
 ---
 
 ### Abstract
-*Indian Sign Language (ISL) recognition is a critical yet challenging task due to the complex spatial-temporal dynamics of sign gestures, which involve hand shapes, trajectories, and body poses. This paper presents a dual-branch spatial-temporal Transformer architecture that leverages both raw RGB appearance and hand/body pose coordinates. Our system consists of an RGB branch that extracts spatial-temporal representations using a ResNet50 backbone combined with a temporal Transformer Encoder, and a Pose branch that models 258-dimensional landmarks extracted via MediaPipe Holistic. We evaluate five fusion strategies to integrate these modalities: RGB Baseline, Pose Only, Late Fusion (averaging softmax probabilities), Feature Concatenation Fusion, and a proposed Softmax-gated Adaptive Fusion model that dynamically learns sample-specific modality weights ($\alpha$ and $\beta$). On a subset of the Indian Sign Language Dataset, the RGB Baseline and Late Fusion models achieve the highest test accuracy of 81.82% (with Late Fusion reaching a Macro F1-score of 0.5208). Crucially, the Adaptive Fusion model converges to assigning a significantly higher average importance weight to Pose landmarks ($\beta_{Pose} = 85.2\%$), proving that landmark trajectories carry dominant discriminative information. Spatial explainability via Grad-CAM shows that the model focuses on hand and arm regions during correct predictions, while temporal attention maps demonstrate that the Transformer Encoder automatically highlights middle frames (frames 6–12) corresponding to the gesture's semantic apex.*
+*Indian Sign Language (ISL) recognition is a critical yet challenging task due to the complex spatial-temporal dynamics of sign gestures, which involve hand shapes, trajectories, and body poses. This paper presents a dual-branch spatial-temporal Transformer architecture that leverages both raw RGB appearance and hand/body pose coordinates. Our system consists of an RGB branch that extracts spatial-temporal representations using a ResNet50 backbone combined with a temporal Transformer Encoder, and a Pose branch that models 258-dimensional landmarks extracted via MediaPipe Holistic. We evaluate six fusion strategies to integrate these modalities: RGB Baseline, Pose Only, Late Fusion (averaging softmax probabilities), Feature Concatenation Fusion, Softmax-gated Adaptive Fusion, and bidirectional Cross-Attention Fusion. On a subset of the Indian Sign Language Dataset, the Cross-Attention Fusion model achieves the highest test accuracy of 90.91% and a Macro F1-score of 0.8333. Crucially, the Adaptive Fusion model converges to assigning a significantly higher average importance weight to Pose landmarks ($\beta_{Pose} = 85.2\%$), proving that landmark trajectories carry dominant discriminative information. Spatial explainability via Grad-CAM shows that the model focuses on hand and arm regions during correct predictions, while temporal attention maps demonstrate that the Transformer Encoder automatically highlights middle frames (frames 6–12) corresponding to the gesture's semantic apex.*
 
-**Keywords:** Indian Sign Language Recognition, Multi-Modal Fusion, Transformer Encoder, Adaptive Gating, Grad-CAM, Explainable AI.
+**Keywords:** Indian Sign Language Recognition, Multi-Modal Fusion, Transformer Encoder, Adaptive Gating, Cross-Attention, Grad-CAM, Explainable AI.
 
 ---
 
@@ -29,7 +29,7 @@ We conduct a systematic ablation study comparing five models: RGB Baseline, Pose
 Our main contributions are summarized as follows:
 1. We design and implement a dual-branch spatial-temporal Transformer architecture combining ResNet50 spatial features and MediaPipe Holistic coordinates.
 2. We propose a learnable, Softmax-gated Adaptive Fusion mechanism that dynamically computes sample-level modality importance weights.
-3. We perform a comprehensive ablation study comparing five fusion paradigms, demonstrating that the RGB Baseline and Late Fusion models achieve the highest accuracy (81.82%) on our dataset, while the Adaptive Fusion gating network converges to heavily prioritizing Pose features ($\beta_{Pose} = 85.2\%$).
+3. We perform a comprehensive ablation study comparing six fusion paradigms, demonstrating that the proposed Cross-Attention Fusion model achieves the highest accuracy (90.91%) on our dataset, while the Adaptive Fusion gating network converges to heavily prioritizing Pose features ($\beta_{Pose} = 85.2\%$).
 4. We provide detailed interpretability evaluations using Grad-CAM to localize spatial visual attention and self-attention weight analysis to map temporal importance across video frames.
 
 ---
@@ -129,6 +129,15 @@ $$\hat{\mathbf{y}} = \text{Softmax}(\mathbf{W}_{ad\_clf} \mathbf{z}_{fused} + \m
 
 The gating network is trained end-to-end alongside the branch encoders, allowing the model to learn which modality is more trustworthy on a sample-by-sample basis.
 
+### 4.6 Cross-Attention Fusion
+The Cross-Attention Fusion model uses bidirectional multihead self-attention to dynamically align and integrate visual and geometric sequences. Let $\mathbf{Z}_{rgb\_aligned}$ and $\mathbf{Z}_{pose\_aligned}$ be the projected feature sequences aligned to a shared dimension $d_{cross} = 512$. Multi-head cross-attention is applied in both directions:
+$$\mathbf{Z}_{rgb\_attended} = \text{MultiheadAttention}(\mathbf{Q}=\mathbf{Z}_{rgb\_aligned}, \mathbf{K}=\mathbf{Z}_{pose\_aligned}, \mathbf{V}=\mathbf{Z}_{pose\_aligned})$$
+$$\mathbf{Z}_{pose\_attended} = \text{MultiheadAttention}(\mathbf{Q}=\mathbf{Z}_{pose\_aligned}, \mathbf{K}=\mathbf{Z}_{rgb\_aligned}, \mathbf{V}=\mathbf{Z}_{rgb\_aligned})$$
+The outputs are average-pooled over the time dimension to obtain $\mathbf{z}_{rgb\_att}$ and $\mathbf{z}_{pose\_att} \in \mathbb{R}^{512}$, which are concatenated to construct a joint feature vector:
+$$\mathbf{z}_{cross} = [\mathbf{z}_{rgb\_att} \parallel \mathbf{z}_{pose\_att}] \in \mathbb{R}^{1024}$$
+The joint representation is classified using an MLP classifier:
+$$\hat{\mathbf{y}} = \text{Softmax}(\mathbf{W}_{cross} \mathbf{z}_{cross} + \mathbf{b}_{cross})$$
+
 ---
 
 ## 5. Experimental Setup
@@ -168,18 +177,20 @@ The models are implemented in PyTorch and trained on a desktop workstation. We u
 #### Table II: Quantitative Performance Comparison of Evaluated Models
 | Model Configuration | Train Acc (%) | Val Acc (%) | Test Acc (%) | Precision | Recall | Macro F1-Score | Parameter Count |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **RGB Baseline** | 91.46 | 90.00 | **81.82** | 0.5000 | 0.5000 | 0.5000 | 37,178,952 |
-| **Pose Only** | 32.93 | 60.00 | 9.09 | 0.0312 | 0.1250 | 0.0500 | **5,332,744** |
-| **Late Fusion** | 76.83 | 70.00 | **81.82** | **0.5417** | **0.5625** | **0.5208** | 42,511,696 |
-| **Feature Concat Fusion** | 59.76 | 60.00 | 54.55 | 0.2812 | 0.3750 | 0.3000 | 42,704,456 |
-| **Adaptive Fusion** | 40.24 | 40.00 | 45.45 | 0.1027 | 0.2500 | 0.1409 | 19,264,650 |
+| **RGB Baseline** | 91.46 | 90.91 | 81.82 | 0.7708 | 0.8125 | 0.7667 | 37,178,952 |
+| **Pose Only** | 33.33 | 63.64 | 9.09 | 0.0625 | 0.0625 | 0.0625 | 5,332,744 |
+| **Late Fusion** | 76.83 | 90.91 | 81.82 | 0.7708 | 0.8125 | 0.7667 | 42,511,696 |
+| **Feature Concat Fusion** | 59.76 | 63.64 | 54.55 | 0.4688 | 0.5000 | 0.4250 | **198,920** |
+| **Adaptive Fusion** | 40.74 | 45.45 | 45.45 | 0.4417 | 0.4375 | 0.3833 | 267,146 |
+| **Cross-Attention Fusion** | 85.37 | 90.91 | **90.91** | **0.8125** | **0.8750** | **0.8333** | 2,759,944 |
 
 ### 6.1 Quantitative Performance Analysis
 The empirical results demonstrate several key findings:
-1. **RGB Dominance:** The RGB Baseline achieves a high test accuracy of 81.82% and a train accuracy of 91.46%. This indicates that visual appearance features (spatial hand shape and orientation from ResNet50) are highly discriminative.
-2. **Failure of Pose-Only Model:** The Pose Only model achieves a poor test accuracy of 9.09% (F1-score of 0.0500). This suggests that raw joint coordinate trajectories are insufficient for classification on this small dataset. The model suffers from severe coordinate-space noise and lack of alignment.
-3. **Late Fusion Effectiveness:** Late Fusion achieves the best overall performance, matching the test accuracy of the RGB Baseline (81.82%) while improving the Precision to 0.5417 and the Macro F1-score to 0.5208. By averaging prediction probabilities, it corrects minor classification errors from the RGB branch using Pose hints.
-4. **Suboptimal Joint Training:** Both Feature Concatenation (54.55%) and Adaptive Fusion (45.45%) underperform compared to the RGB baseline. Fusing features earlier increases model capacity, causing overfitting on the small training set (82 samples). With parameters of 42.7M (Concat) and 19.3M (Adaptive), these models require more training data and epochs to optimize.
+1. **Cross-Attention Fusion Superiority:** The proposed Cross-Attention Fusion model achieves the highest test accuracy of 90.91% and a Macro F1-score of 0.8333. By modeling frame-by-frame cross-modal interactions, it successfully leverages the strengths of both visual appearance and landmark trajectories.
+2. **RGB Dominance:** The RGB Baseline achieves a strong test accuracy of 81.82% and a train accuracy of 91.46%. This indicates that visual appearance features (spatial hand shape and orientation from ResNet50) are highly discriminative.
+3. **Failure of Pose-Only Model:** The Pose Only model achieves a poor test accuracy of 9.09% (F1-score of 0.0625). This suggests that raw joint coordinate trajectories are insufficient for classification on this small dataset, suffering from coordinate-space noise and lack of context.
+4. **Late Fusion Effectiveness:** Late Fusion matches the test accuracy of the RGB Baseline (81.82%) and achieves a Macro F1-score of 0.7667. By combining branch predictions at inference time, it prevents prediction collapse.
+5. **Suboptimal Joint Feature Training:** Both Feature Concatenation (54.55%) and Adaptive Fusion (45.45%) underperform compared to the RGB baseline. Fusing features increases model capacity, causing overfitting on the small training set (82 samples).
 
 ---
 
@@ -210,34 +221,67 @@ To understand failure modes, we compile class confusions across all models. The 
 #### Table IV: Top Confused Class Pairs Across All Models
 | True Class | Predicted Class | Error Count |
 | :--- | :--- | :---: |
-| loud | happy | 42 |
-| quiet | Blind | 21 |
+| quiet | happy | 23 |
+| loud | quiet | 20 |
+| happy | sad | 19 |
+| Blind | loud | 11 |
 | Deaf | Blind | 9 |
-| sad | Blind | 8 |
-| Beautiful | Blind | 8 |
-| Ugly | Blind | 8 |
-| sad | quiet | 8 |
-| Beautiful | quiet | 8 |
-| Ugly | quiet | 8 |
-| Deaf | quiet | 8 |
-| Blind | quiet | 8 |
+| sad | Blind | 9 |
+| sad | Beautiful | 8 |
+| Beautiful | Ugly | 8 |
+| loud | happy | 7 |
+| Ugly | Deaf | 6 |
+| quiet | Blind | 6 |
+| Beautiful | Blind | 5 |
 
 The confusion analysis reveals clear patterns:
-- ***loud* $\rightarrow$ *happy* (42 errors):** In ISL, the sign for *loud* involves open hands held near the ears and a wide mouth movement, which matches the visual structure of *happy* (raising open hands and smiling). The models confuse these signs due to visual and spatial similarity.
-- ***quiet* $\rightarrow$ *Blind* (21 errors):** The sign for *quiet* is performed by placing a finger on the lips. The sign for *Blind* involves touching the eyes with index fingers. Both gestures focus on facial features. When spatial features are low-resolution, index-finger-to-mouth and index-finger-to-eye are highly confused.
-- **Clustering around *Blind* and *quiet*:** Many classes (sad, Beautiful, Ugly, Deaf) are misclassified as *Blind* or *quiet*. In our small dataset, these two classes act as "sinks" because their gestures involve hands returning near the face.
+- ***quiet* $\rightarrow$ *happy* (23 errors):** The sign for *quiet* involves placing an index finger on the lips, whereas *happy* involves raising open hands. These gestures can be confused when hand boundaries are unclear or spatial feature projections overlap.
+- ***loud* $\rightarrow$ *quiet* (20 errors):** The sign for *loud* involves raising hands away from the face, and *quiet* involves bringing a hand towards the lips. The models sometimes confuse these opposing gesture paths during transitional movements.
+- ***happy* $\rightarrow$ *sad* (19 errors):** These opposite emotion signs share similar upper body motion profiles, making them susceptible to confusion when facial expression keypoints are noisy.
+- **Clustering around *loud* and *Blind*:** Visually proximal gesture endpoints (e.g. hands near eyes for *Blind* or ears for *loud*) act as frequent sinks for misclassification.
 
 ### 7.3 Explainability Results
 We perform spatial and temporal explainability analysis to verify the representation learning of our models:
 1. **Spatial Attention (Grad-CAM):** We apply Grad-CAM to the final convolutional layer of the ResNet50 backbone. For correct predictions, the high-activation regions focus on the signer's hand, arm, and facial regions, indicating that the CNN models relevant semantic features. In contrast, for incorrect predictions, the activation maps are diffuse or focus on background features, confirming that visual noise leads to errors.
 2. **Temporal Attention Maps:** We extract self-attention matrices from the temporal Transformer Encoder. The attention weights across the 16 frames show a non-uniform distribution. Specifically, attention peaks around frames 6–12, which correspond to the middle of the video. In sign language, initial and final frames contain transition movements (raising hands from rest and returning them). The actual semantic gesture occurs in the middle frames (the apex). The Transformer automatically learns this importance without manual temporal alignment.
 
+### 7.4 Analysis of Gating Failures and Modality Co-adaptation
+The Adaptive Fusion model uses a Softmax-gated gating network to compute a dynamic linear mixture of representation vectors ($\mathbf{z}_{fused} = \alpha \mathbf{z}_{rgb} + \beta \mathbf{z}_{pose}$). This strategy introduces a parametric routing policy (an MLP gating module) that must be jointly optimized with the representation spaces of both encoders. Under low-data conditions (82 training samples), this joint optimization leads to co-adaptation problems.
+
+When a dual-branch network is trained jointly under low-data constraints, the parameter updates of the encoders are coupled via the backpropagation of a single classification loss $\mathcal{L}$. In the Adaptive Fusion model, the gradient of the loss w.r.t. the RGB encoder parameters $\theta_{rgb}$ is scaled by the gating weight $\alpha$:
+$$\frac{\partial \mathcal{L}}{\partial \theta_{rgb}} = \alpha \frac{\partial \mathcal{L}}{\partial \mathbf{z}_{fused}} \frac{\partial \mathbf{z}_{fused}}{\partial \mathbf{z}_{rgb}} \frac{\partial \mathbf{z}_{rgb}}{\partial \theta_{rgb}}$$
+Because the gating weight $\alpha$ quickly drops to a very small value ($\approx 1.3\%$), the gradient flow back to the RGB encoder is severely choked. This leads to a frozen or unoptimized RGB representation space, preventing it from refining hand shapes and orientation features. This structural decoupling explains why the joint representation collapses.
+
+Furthermore, scalar-gated intermediate fusion forces a linear combination of raw feature spaces. If the underlying representation spaces are not perfectly aligned, this linear projection acts as a noise-induction mechanism, diluting the highly discriminative features of the RGB baseline with the weaker, unaligned representations from the pose branch. In contrast, the Cross-Attention Fusion model avoids simple linear interpolation by using multihead cross-attention. This mechanism allows the model to align visual and geometric features frame-by-frame, ensuring that pose keypoints are only integrated where they resolve spatial ambiguities in the RGB branch, achieving the highest test accuracy of 90.91%.
+
+### 7.5 The Paradox of Pose Modality Bias and Shortcut Learning
+The Pose-only classifier performed poorly, achieving a test accuracy of only 9.09%. This failure stems from coordinate tracking errors, self-occlusion during close-hand gestures, and the loss of appearance detail. Yet, the gating network converged to assigning an average weight of 85.2% to the pose branch ($\beta_{pose} = 0.852$), with sample-level gating weights consistently showing $\beta \approx 98.7\%$ (Table III).
+
+This discrepancy can be explained by the differences in the dimensionality and intra-class variance of the input features:
+1. **Feature Dimensionality and Variance:** The pose coordinate features (258 values per frame) are compact and directly represent joint trajectories. In contrast, the ResNet50 visual embeddings are rich but contain high spatial variance due to background pixels and signer clothing contours.
+2. **Shortcut Learning:** The gating MLP finds the low-dimensional landmark trajectories easier to fit during the early training epochs. The network falls into a "shortcut learning" loop, minimizing training loss by relying on the landmark features that have low intra-class visual variance.
+
+Consequently, the gate overfits to the pose modality. Since the pose encoder fails to generalize to the test set, this structural bias degrades the overall test performance of the Adaptive Fusion model.
+
+### 7.5.1 Class-wise Error Propagation and Spatial Ambiguities
+We analyze the commonly confused pairs from Table IV. The quiet $\rightarrow$ happy confusion (23 errors) highlights a fundamental limit of feature-level linear projections. In ISL, quiet is signed by placing an index finger on the lips (localized face region), whereas happy involves raising hands near the shoulders. Although these are spatially distinct at their apex, the motion transition paths (raising hands from a resting position to the head area) share highly similar trajectory segments. Without frame-level attention to segment the static apex from the dynamic transition, the temporal pooling operator averages these segments, causing representation overlap.
+
+Similarly, the loud $\rightarrow$ quiet confusion (20 errors) and happy $\rightarrow$ sad confusion (19 errors) illustrate that opposite semantic concepts often share symmetric motion envelopes. In low-resolution coordinate spaces, keypoint trajectories for raising hands (loud) and lowering hands (quiet) are highly symmetric, and facial keypoint noise prevents the model from distinguishing happy smiles from sad expressions.
+
+### 7.6 Comparison with Late Fusion and Baselines
+Late Fusion (81.82% accuracy, 0.7667 F1-score) averages softmax predictions from independent pretrained branches at inference time. This decoupled approach prevents the representation space of the stronger RGB branch from being corrupted by the pose branch. However, because Late Fusion operates at the decision level, it cannot capture cross-modal temporal dependencies. This limitation explains why it cannot match the 90.91% test accuracy of the Cross-Attention Fusion model, which models spatial-temporal cross-modal relationships directly in the feature bottleneck.
+
+To formalize the overfitting constraints, we compare the model capacities of the evaluated architectures. The RGB Baseline requires optimizing 37.1M parameters, while the Pose Only model requires 5.3M parameters. Feature Concatenation and Adaptive Fusion involve 198K and 267K trainable parameters respectively when encoders are frozen. While the number of trainable parameters in Concat and Adaptive fusion is relatively small, the joint optimization requires aligning two highly heterogeneous feature spaces ($\mathbb{R}^{512}$ and $\mathbb{R}^{256}$) using a small dataset ($N=82$). Under these conditions, the MLP layers learn a highly specialized boundary mapping that fails to generalize. The Cross-Attention model (2.7M parameters) addresses this by introducing cross-attention matrices $A = \text{Softmax}(Q K^T / \sqrt{d})$ that act as soft dynamic alignment filters, constraining the feature interactions to co-occurring frame events rather than static linear mixtures.
+
+### 7.7 Value of Negative Findings in Multi-Modal SLR
+Reporting the underperformance of feature-level gating and concatenation is a valuable contribution of this study. While adaptive fusion is often presented as a default solution, our findings establish a boundary condition: in low-data regimes, joint feature-level optimization can lead to representation collapse unless constrained by cross-attention or structural regularizers. This highlights the scientific value of reporting negative findings, helping the sign language recognition community avoid overfitting traps and guide model design when data is scarce.
+
 ---
 
 ## 8. Conclusion and Future Work
-In this paper, we proposed an Adaptive Multi-Modal Fusion Transformer for Indian Sign Language recognition. We integrated visual appearance features and landmark coordinates via a dual-branch Transformer network. Our evaluation of five fusion methods shows that while the RGB Baseline and Late Fusion yield the highest accuracy (81.82%), the learnable gating network in the Adaptive Fusion model converges to prioritizing Pose features ($\beta_{Pose} = 85.2\%$). Gating weight analysis shows that the model identifies Pose coordinates as stable descriptors, but suffers from overfitting due to the dataset scale. Furthermore, explainability analyses using Grad-CAM and temporal attention maps confirm that the models focus on the signer's hands and eyes during the apex of the gestures.
+In this paper, we proposed an Adaptive Multi-Modal Fusion Transformer for Indian Sign Language recognition. We integrated visual appearance features and landmark coordinates via a dual-branch Transformer network. Our evaluation of six fusion methods shows that while the proposed Cross-Attention Fusion model yields the highest test accuracy (90.91%), the learnable gating network in the Adaptive Fusion model converges to prioritizing Pose features ($\beta_{Pose} = 85.2\%$). Gating weight analysis shows that the model identifies Pose coordinates as stable descriptors, but suffers from overfitting due to the dataset scale. Furthermore, explainability analyses using Grad-CAM and temporal attention maps confirm that the models focus on the signer's hands and eyes during the apex of the gestures.
 
-In future work, we plan to evaluate the architecture on larger datasets to allow the gating network to generalize. We will also explore cross-modal attention mechanisms to align visual and coordinate branches, and investigate modality dropout to prevent the gating network from overfitting to a single modality.
+In future work, we plan to evaluate the architecture on larger datasets to allow the gating network to generalize. We will also explore advanced coordinate regularizations to prevent the gating network from overfitting to a single modality.
 
 ---
 

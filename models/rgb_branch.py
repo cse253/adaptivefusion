@@ -56,16 +56,19 @@ class RGBBaselineModel(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            x: (batch, T, C, H, W)  — T frames per video
+            x: (batch, T, C, H, W) or (batch, T, 2048)
         Returns:
             logits: (batch, num_classes)
         """
-        B, T, C, H, W = x.shape
-
-        # Merge batch and time so CNN processes each frame independently
-        x = x.view(B * T, C, H, W)          # (B*T, C, H, W)
-        x = self.cnn(x)                      # (B*T, 2048, 1, 1)
-        x = x.view(B * T, -1)               # (B*T, 2048)
+        if len(x.shape) == 5:
+            B, T, C, H, W = x.shape
+            # Merge batch and time so CNN processes each frame independently
+            x = x.view(B * T, C, H, W)          # (B*T, C, H, W)
+            x = self.cnn(x)                      # (B*T, 2048, 1, 1)
+            x = x.view(B * T, -1)               # (B*T, 2048)
+        else:
+            B, T, D = x.shape
+            x = x.view(B * T, D)
 
         # Project to transformer dimension
         x = self.input_proj(x)              # (B*T, d_model)

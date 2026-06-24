@@ -115,6 +115,9 @@ if __name__ == "__main__":
     )
     print(f"[INFO] Train: {len(train_loader.dataset)}  |  Val: {len(val_loader.dataset)}\n")
 
+    rgb_ckpt  = Path(ROOT) / "checkpoints" / "best_model.pth"
+    pose_ckpt = Path(ROOT) / "checkpoints" / "best_pose_model.pth"
+
     # Model
     model     = AdaptiveMultiModalModel(
         num_classes=NUM_CLASSES,
@@ -127,6 +130,9 @@ if __name__ == "__main__":
         nhead_pose=cfg["model"]["nhead_pose"],
         num_transformer_layers=cfg["model"]["num_transformer_layers"],
         dropout=cfg["model"]["dropout"],
+        rgb_weights_path=str(rgb_ckpt) if rgb_ckpt.exists() else None,
+        pose_weights_path=str(pose_ckpt) if pose_ckpt.exists() else None,
+        freeze_encoders=True,
     ).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=LR, weight_decay=WD)

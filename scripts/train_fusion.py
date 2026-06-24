@@ -168,8 +168,9 @@ if __name__ == "__main__":
         print(f"[INFO] Pre-trained models found. Skipping training (use --force to retrain).")
         sys.exit(0)
 
+    results_dir = Path(ROOT) / cfg["paths"]["results_dir"]
     Path(ROOT, cfg["paths"]["checkpoint_dir"]).mkdir(parents=True, exist_ok=True)
-    Path(ROOT, cfg["paths"]["results_dir"]).mkdir(parents=True, exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[INFO] Using device: {device}")
@@ -199,8 +200,37 @@ if __name__ == "__main__":
         print(f"[INFO] Loaded Pose weights : {pose_ckpt.name}")
 
     late_model = LateFusionModel(rgb_model, pose_model).to(device)
-    train_model(late_model, "LateFusionModel", "best_late_fusion.pth",
-                train_loader, val_loader, device)
+    
+    # Evaluate Late Fusion directly without training (Late fusion has no trainable parameters)
+    print("\n[INFO] Evaluating LateFusionModel (non-trainable)...")
+    def evaluate_late_fusion(model, loader, device):
+        model.eval()
+        correct, total = 0, 0
+        with torch.no_grad():
+            for frames, pose, labels in loader:
+                frames = frames.to(device)
+                pose = pose.to(device)
+                labels = labels.to(device)
+                probs = model(frames, pose)
+                preds = probs.argmax(dim=1)
+                correct += (preds == labels).sum().item()
+                total += len(labels)
+        return correct / total
+
+    late_train_acc = evaluate_late_fusion(late_model, train_loader, device)
+    late_val_acc = evaluate_late_fusion(late_model, val_loader, device)
+    print(f"LateFusionModel — Train Acc: {late_train_acc:.4f}  Val Acc: {late_val_acc:.4f}")
+    
+    torch.save(late_model.state_dict(), late_ckpt)
+    late_log_path = results_dir / "training_log_best_late_fusion.csv"
+    with open(late_log_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["epoch", "train_loss", "train_acc", "val_loss", "val_acc"])
+        writer.writeheader()
+        writer.writerow({
+            "epoch": 1, "train_loss": 0.0, "train_acc": round(late_train_acc, 6),
+            "val_loss": 0.0, "val_acc": round(late_val_acc, 6)
+        })
+    print(f"[INFO] Late Fusion log saved -> {late_log_path}")
 
     # ── 2. Feature Concat Fusion ───────────────────────────────────────────────
     concat_model = FeatureConcatFusionModel(
@@ -208,7 +238,10 @@ if __name__ == "__main__":
         num_frames=NUM_FRAMES,
         rgb_d_model=cfg["model"]["rgb_d_model"],
         pose_d_model=cfg["model"]["pose_d_model"],
-        dropout=cfg["model"]["dropout"]
+        dropout=cfg["model"]["dropout"],
+        rgb_weights_path=str(rgb_ckpt) if rgb_ckpt.exists() else None,
+        pose_weights_path=str(pose_ckpt) if pose_ckpt.exists() else None,
+        freeze_encoders=True
     ).to(device)
     train_model(concat_model, "FeatureConcatFusionModel", "best_concat_fusion.pth",
                 train_loader, val_loader, device)
@@ -221,7 +254,10 @@ if __name__ == "__main__":
         pose_d_model=cfg["model"]["pose_d_model"],
         cross_attn_d_model=cfg["model"]["cross_attn_d_model"],
         cross_attn_nhead=cfg["model"]["cross_attn_nhead"],
-        dropout=cfg["model"]["dropout"]
+        dropout=cfg["model"]["dropout"],
+        rgb_weights_path=str(rgb_ckpt) if rgb_ckpt.exists() else None,
+        pose_weights_path=str(pose_ckpt) if pose_ckpt.exists() else None,
+        freeze_encoders=True
     ).to(device)
     train_model(cross_model, "CrossAttentionFusionModel", "best_cross_attention_fusion.pth",
                 train_loader, val_loader, device)

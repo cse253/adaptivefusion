@@ -80,6 +80,9 @@ class FeatureConcatFusionModel(nn.Module):
         rgb_d_model: int = 512,
         pose_d_model: int = 256,
         dropout: float = 0.1,
+        rgb_weights_path: str = None,
+        pose_weights_path: str = None,
+        freeze_encoders: bool = True,
     ):
         super().__init__()
 
@@ -89,6 +92,9 @@ class FeatureConcatFusionModel(nn.Module):
             num_frames=num_frames,
             d_model=rgb_d_model,
         )
+        if rgb_weights_path and os.path.exists(rgb_weights_path):
+            _rgb.load_state_dict(torch.load(rgb_weights_path, map_location="cpu"))
+            print(f"[INFO] Loaded pretrained RGB weights for Concat Fusion: {rgb_weights_path}")
         self.rgb_cnn         = _rgb.cnn
         self.rgb_input_proj  = _rgb.input_proj
         self.rgb_pos_emb     = _rgb.pos_embedding
@@ -100,6 +106,9 @@ class FeatureConcatFusionModel(nn.Module):
             num_frames=num_frames,
             d_model=pose_d_model,
         )
+        if pose_weights_path and os.path.exists(pose_weights_path):
+            _pose.load_state_dict(torch.load(pose_weights_path, map_location="cpu"))
+            print(f"[INFO] Loaded pretrained Pose weights for Concat Fusion: {pose_weights_path}")
         self.pose_input_proj  = _pose.input_proj
         self.pose_pos_emb     = _pose.pos_embedding
         self.pose_transformer = _pose.transformer
@@ -112,6 +121,17 @@ class FeatureConcatFusionModel(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(256, num_classes),
         )
+
+        if freeze_encoders:
+            for p in self.rgb_input_proj.parameters(): p.requires_grad = False
+            self.rgb_pos_emb.requires_grad = False
+            for p in self.rgb_transformer.parameters(): p.requires_grad = False
+            for p in self.rgb_cnn.parameters(): p.requires_grad = False
+
+            for p in self.pose_input_proj.parameters(): p.requires_grad = False
+            self.pose_pos_emb.requires_grad = False
+            for p in self.pose_transformer.parameters(): p.requires_grad = False
+            print("[INFO] Freezing feature encoders in Concat Fusion Model.")
 
     def _encode_rgb(self, frames: torch.Tensor) -> torch.Tensor:
         """Extract 512-dim feature vector from RGB frames/embeddings."""
@@ -158,6 +178,9 @@ class CrossAttentionFusionModel(nn.Module):
         cross_attn_d_model: int = 512,
         cross_attn_nhead: int = 8,
         dropout: float = 0.1,
+        rgb_weights_path: str = None,
+        pose_weights_path: str = None,
+        freeze_encoders: bool = True,
     ):
         super().__init__()
 
@@ -167,6 +190,9 @@ class CrossAttentionFusionModel(nn.Module):
             num_frames=num_frames,
             d_model=rgb_d_model,
         )
+        if rgb_weights_path and os.path.exists(rgb_weights_path):
+            _rgb.load_state_dict(torch.load(rgb_weights_path, map_location="cpu"))
+            print(f"[INFO] Loaded pretrained RGB weights for Cross-Attention Fusion: {rgb_weights_path}")
         self.rgb_cnn         = _rgb.cnn
         self.rgb_input_proj  = _rgb.input_proj
         self.rgb_pos_emb     = _rgb.pos_embedding
@@ -178,6 +204,9 @@ class CrossAttentionFusionModel(nn.Module):
             num_frames=num_frames,
             d_model=pose_d_model,
         )
+        if pose_weights_path and os.path.exists(pose_weights_path):
+            _pose.load_state_dict(torch.load(pose_weights_path, map_location="cpu"))
+            print(f"[INFO] Loaded pretrained Pose weights for Cross-Attention Fusion: {pose_weights_path}")
         self.pose_input_proj  = _pose.input_proj
         self.pose_pos_emb     = _pose.pos_embedding
         self.pose_transformer = _pose.transformer
@@ -203,6 +232,17 @@ class CrossAttentionFusionModel(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(256, num_classes)
         )
+
+        if freeze_encoders:
+            for p in self.rgb_input_proj.parameters(): p.requires_grad = False
+            self.rgb_pos_emb.requires_grad = False
+            for p in self.rgb_transformer.parameters(): p.requires_grad = False
+            for p in self.rgb_cnn.parameters(): p.requires_grad = False
+
+            for p in self.pose_input_proj.parameters(): p.requires_grad = False
+            self.pose_pos_emb.requires_grad = False
+            for p in self.pose_transformer.parameters(): p.requires_grad = False
+            print("[INFO] Freezing feature encoders in Cross-Attention Fusion Model.")
 
     def _encode_rgb(self, frames: torch.Tensor) -> torch.Tensor:
         if len(frames.shape) == 5:

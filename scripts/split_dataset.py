@@ -57,24 +57,35 @@ def scan(dataset_dir: Path) -> pd.DataFrame:
 # ── 2. Split ───────────────────────────────────────────────────────────────────
 def split(df: pd.DataFrame, seed: int = 42):
     """
-    80 / 10 / 10 split with stratification.
-    Falls back to a plain random split if any class has fewer than 3 samples
-    (stratification requires at least 1 sample in every subset).
+    80 / 10 / 10 stratified split by group/class.
+    Guarantees every class has at least 1 sample in validation and test sets.
     """
-    try:
-        train_df, temp_df = train_test_split(
-            df, test_size=0.2, random_state=seed, stratify=df["label_id"]
-        )
-        val_df, test_df = train_test_split(
-            temp_df, test_size=0.5, random_state=seed, stratify=temp_df["label_id"]
-        )
-        print("[INFO] Stratified split succeeded.")
-    except ValueError as e:
-        print(f"[WARN] Stratified split failed ({e}). Using random split.")
-        train_df, temp_df = train_test_split(df, test_size=0.2, random_state=seed)
-        val_df, test_df   = train_test_split(temp_df, test_size=0.5, random_state=seed)
-
-    return train_df.reset_index(drop=True), val_df.reset_index(drop=True), test_df.reset_index(drop=True)
+    import numpy as np
+    train_list, val_list, test_list = [], [], []
+    
+    # Group by label_id
+    grouped = df.groupby("label_id")
+    for label_id, group in grouped:
+        # Shuffle group
+        shuffled_group = group.sample(frac=1.0, random_state=seed).reset_index(drop=True)
+        n = len(shuffled_group)
+        
+        # Determine split sizes: val = 10%, test = 10%, train = remainder
+        # Ensure at least 1 sample in val and test for each class
+        n_val = max(1, int(round(n * 0.1)))
+        n_test = max(1, int(round(n * 0.1)))
+        n_train = n - n_val - n_test
+        
+        train_list.append(shuffled_group.iloc[:n_train])
+        val_list.append(shuffled_group.iloc[n_train:n_train+n_val])
+        test_list.append(shuffled_group.iloc[n_train+n_val:])
+        
+    train_df = pd.concat(train_list).sample(frac=1.0, random_state=seed).reset_index(drop=True)
+    val_df = pd.concat(val_list).sample(frac=1.0, random_state=seed).reset_index(drop=True)
+    test_df = pd.concat(test_list).sample(frac=1.0, random_state=seed).reset_index(drop=True)
+    
+    print("[INFO] Custom class-wise stratified split succeeded.")
+    return train_df, val_df, test_df
 
 # ── 3. Print distribution ──────────────────────────────────────────────────────
 def print_distribution(name: str, df: pd.DataFrame):

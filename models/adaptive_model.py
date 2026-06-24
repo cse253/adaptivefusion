@@ -40,6 +40,9 @@ class AdaptiveMultiModalModel(nn.Module):
         nhead_pose: int             = 4,
         num_transformer_layers: int = 4,
         dropout: float              = 0.1,
+        rgb_weights_path: str       = None,
+        pose_weights_path: str      = None,
+        freeze_encoders: bool       = True,
     ):
         super().__init__()
         self.num_frames = num_frames
@@ -70,6 +73,44 @@ class AdaptiveMultiModalModel(nn.Module):
         # ── Adaptive Fusion + Classifier ───────────────────────────────────────
         self.adaptive_fusion = AdaptiveFusion(emb_dim=rgb_d_model)
         self.classifier      = nn.Linear(rgb_d_model, num_classes)
+
+        # Map state dict keys for RGB baseline
+        if rgb_weights_path and os.path.exists(rgb_weights_path):
+            rgb_state = torch.load(rgb_weights_path, map_location='cpu')
+            mapped_rgb_state = {}
+            for k, v in rgb_state.items():
+                if k.startswith('input_proj.'):
+                    mapped_rgb_state[k.replace('input_proj.', 'rgb_proj.')] = v
+                elif k == 'pos_embedding':
+                    mapped_rgb_state['rgb_pos_emb'] = v
+                elif k.startswith('transformer.'):
+                    mapped_rgb_state[k.replace('transformer.', 'rgb_transformer.')] = v
+            self.load_state_dict(mapped_rgb_state, strict=False)
+            print(f"[INFO] Loaded pretrained RGB weights for Adaptive Fusion: {rgb_weights_path}")
+
+        # Map state dict keys for Pose branch
+        if pose_weights_path and os.path.exists(pose_weights_path):
+            pose_state = torch.load(pose_weights_path, map_location='cpu')
+            mapped_pose_state = {}
+            for k, v in pose_state.items():
+                if k.startswith('input_proj.'):
+                    mapped_pose_state[k.replace('input_proj.', 'pose_proj.')] = v
+                elif k == 'pos_embedding':
+                    mapped_pose_state['pose_pos_emb'] = v
+                elif k.startswith('transformer.'):
+                    mapped_pose_state[k.replace('transformer.', 'pose_transformer.')] = v
+            self.load_state_dict(mapped_pose_state, strict=False)
+            print(f"[INFO] Loaded pretrained Pose weights for Adaptive Fusion: {pose_weights_path}")
+
+        if freeze_encoders:
+            for p in self.rgb_proj.parameters(): p.requires_grad = False
+            self.rgb_pos_emb.requires_grad = False
+            for p in self.rgb_transformer.parameters(): p.requires_grad = False
+
+            for p in self.pose_proj.parameters(): p.requires_grad = False
+            self.pose_pos_emb.requires_grad = False
+            for p in self.pose_transformer.parameters(): p.requires_grad = False
+            print("[INFO] Freezing feature encoders in Adaptive Fusion Model.")
 
     def encode_rgb(self, rgb_emb: torch.Tensor) -> torch.Tensor:
         """rgb_emb (B,T,2048) → (B,512)"""
